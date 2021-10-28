@@ -1,0 +1,50 @@
+.highlightTableColor {
+  background-color: #8FCAF1
+}
+
+
+
+
+tr {
+  cursor: pointer !important;
+}
+
+.svg-inline--fa {
+
+  vertical-align: -0.18em !important;
+}
+
+.make-gold {
+  background-color: #C7E6C9
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.truncate2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 10px;
+}
+
+// .mat-column-patientname {
+//   width: 500px;
+// }
+
+// .mat-column-readdatetime {
+//   width: 800px;
+// }
+
+
+// .mat-column-hn {
+//   width: 300px;
+// }
+
+.mat-column-sendMachine {
+  width: 10px;
+}

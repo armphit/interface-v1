@@ -1,1 +1,69 @@
 /* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 100%;
+  overflow: hidden;
+}
+
+table {
+  width: 100% !important;
+}
+
+.mat-grid-tile-content {
+
+  display: block !important;
+  background-color: #3F51B5 !important;
+
+}
+
+.container {
+  width: 100% !important;
+  min-height: 100% !important;
+  padding: 5px;
+  margin: 0px !important;
+  padding-top: 5px !important;
+  padding-bottom: 100px !important;
+}
+
+.mat-tab-links {
+
+  background-color: white;
+}
+
+.mat-body,
+.mat-body-1,
+.mat-typography {
+
+  background-color: #3F51B5;
+}
+
+tr:hover {
+  background-color: #e7e4e4;
+}
+
+// th {
+//   border-right: 1px solid #E0E0E0;
+//   background-color: #e7e4e488;
+//   padding-left: 50px;
+
+// }
+
+// td {
+//   // border-right: 1px solid #E0E0E0;
+//   // padding-left: 20px !important;
+// }
+
+
+
+mat-form-field {
+  line-height: unset !important;
+}
+
+::ng-deep.mat-tab-label.mat-tab-label-active:not(.mat-tab-disabled),
+::ng-deep.mat-tab-label.mat-tab-label-active.cdk-keyboard-focused:not(.mat-tab-disabled) {
+  color: #053742 !important;
+  font-weight: bold !important;
+}
