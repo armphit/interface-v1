@@ -1,5 +1,5 @@
 .highlightTableColor {
-  background-color: #8FCAF1
+  background-color: #D9EDF7
 }
 
 
@@ -48,3 +48,38 @@ tr {
 .mat-column-sendMachine {
   width: 10px;
 }
+
+
+
+mat-label {
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+}
+
+/* Border */
+.cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
+  font-weight: bold;
+}
+
+panel-body {
+  color: #000;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  background-color: white;
+  opacity: 1;
+}
+
+.panel-info>.panel-heading {
+  padding-top: 19.5px;
+  padding-bottom: 19.5px;
+}
+
+
+
+// ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+//   color: #3F51B5 !important;
+//   // opacity: 1!important;
+// }

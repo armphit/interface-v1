@@ -112,7 +112,7 @@ export class DrugAutoComponent implements OnInit {
     let dataForm = new FormData();
     dataForm.append('hn', hn);
     let getData: any = await this.http.post('listDataPatien', dataForm);
-    console.log(getData);
+
     if (getData.connect) {
       if (getData.response.rowCount > 0) {
         this.dataDrugPatien = getData.response.result;

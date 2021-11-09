@@ -4,7 +4,7 @@
     <div class="container">
 
       <div class="panel panel-default">
-        <div class="panel-body">
+        <div class="panel-body" style="color: #000;">
           <div class="row">
             <div class="col-lg-9">
               <mat-form-field appearance="outline">
@@ -76,8 +76,7 @@
             </tr>
 
           </table>
-          <mat-paginator #MatPaginator="matPaginator" [length]="10" [pageSize]="10" [pageSizeOptions]="[10, 50, 100]"
-            showFirstLastButtons>
+          <mat-paginator #MatPaginator="matPaginator" [length]="10" [pageSize]="10" showFirstLastButtons>
           </mat-paginator>
         </div>
       </div>
@@ -89,21 +88,68 @@
 
   <mat-grid-tile>
     <div class="container">
-      <div class="panel panel-default">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+
+
+          <div class="example-container">
+
+            <div class="form-row">
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom01">PrescriptionNo.</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="prescriptionnoT"
+                  readonly="true">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom02">Sex</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="sexT" readonly="true">
+
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom02">BirthDate</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="brithdayT" readonly="true">
+
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom01">HN</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="hnT" readonly="true">
+              </div>
+              <div class="col-md-8 mb-3">
+                <label for="validationCustom02">Name</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="nameT" readonly="true">
+
+              </div>
+            </div>
+            <!-- <mat-form-field appearance="outline">
+              <mat-label>PrescriptionNo.</mat-label>
+              <input matInput [value]="prescriptionnoT" readonly="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="padding-left: 10px;">
+              <mat-label>Sex</mat-label>
+              <input matInput [value]="sexT" readonly="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="padding-left: 10px;">
+              <mat-label>BirthDate</mat-label>
+              <input matInput [value]="brithdayT" readonly="true">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>HN</mat-label>
+              <input matInput [value]="hnT" readonly="true">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" style="padding-left: 10px;width: 422px;">
+              <mat-label>Name</mat-label>
+              <input matInput [value]="nameT" readonly="true">
+            </mat-form-field> -->
+
+
+
+
+          </div>
+        </div>
         <div class="panel-body">
-          <h1>Detail</h1>
-          <span>
-            <strong>PrescriptionNo : </strong>{{prescriptionnoT}}&nbsp;&nbsp;
-            <strong>HN : </strong>{{hnT}}&nbsp;&nbsp;
-            <strong>Name : </strong>
-            <span fxFlexLayout="row" matTooltip={{nameT}} [matTooltipPosition]="'above'">
-              {{ (nameT.length>13)? (nameT | slice:0:13)+'..':(nameT) }}
-            </span>&nbsp;&nbsp;
-            <strong>Sex : </strong>{{sexT}}&nbsp;&nbsp;
-            <strong>DateofBirth : </strong>{{brithdayT}}&nbsp;&nbsp;
-
-          </span>
-
           <table mat-table [dataSource]="dataSource2" #MatSort2="matSort" matSort
             (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" matTableExporter
             matSortActive="readdatetime" matSortDirection="desc">
@@ -155,8 +201,7 @@
             </tr>
 
           </table>
-          <mat-paginator #MatPaginator2="matPaginator" [length]="10" [pageSize]="10" [pageSizeOptions]="[10, 50, 100]"
-            showFirstLastButtons>
+          <mat-paginator #MatPaginator2="matPaginator" [length]="8" [pageSize]="8" showFirstLastButtons>
           </mat-paginator>
         </div>
       </div>
