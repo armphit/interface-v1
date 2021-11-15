@@ -14,7 +14,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'drug-auto',
+    redirectTo: 'drug-manual',
     pathMatch: 'full',
   },
 ];

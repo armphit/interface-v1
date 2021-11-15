@@ -100,6 +100,29 @@
                 <input type="text" class="form-control" style="font-weight:bold;" [value]="prescriptionnoT"
                   readonly="true">
               </div>
+              <div class="col-md-6 mb-3">
+                <label for="validationCustom02">Name</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="nameT" readonly="true">
+
+              </div>
+
+
+
+
+              <div class="col-md-2 mb-3" style=" display: flex;
+              justify-content: center;">
+                <!-- <label for="validationCustom02">Name</label> -->
+                <button mat-fab color="primary" aria-label="Example icon button with a delete icon"
+                  (click)="dataDrugSend()" matTooltip="Re-Send">
+                  <mat-icon>send</mat-icon>
+                </button>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4 mb-3">
+                <label for="validationCustom01">HN</label>
+                <input type="text" class="form-control" style="font-weight:bold;" [value]="hnT" readonly="true">
+              </div>
               <div class="col-md-4 mb-3">
                 <label for="validationCustom02">Sex</label>
                 <input type="text" class="form-control" style="font-weight:bold;" [value]="sexT" readonly="true">
@@ -110,39 +133,9 @@
                 <input type="text" class="form-control" style="font-weight:bold;" [value]="brithdayT" readonly="true">
 
               </div>
-            </div>
-            <div class="form-row">
-              <div class="col-md-4 mb-3">
-                <label for="validationCustom01">HN</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="hnT" readonly="true">
-              </div>
-              <div class="col-md-8 mb-3">
-                <label for="validationCustom02">Name</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="nameT" readonly="true">
 
-              </div>
             </div>
-            <!-- <mat-form-field appearance="outline">
-              <mat-label>PrescriptionNo.</mat-label>
-              <input matInput [value]="prescriptionnoT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="padding-left: 10px;">
-              <mat-label>Sex</mat-label>
-              <input matInput [value]="sexT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="padding-left: 10px;">
-              <mat-label>BirthDate</mat-label>
-              <input matInput [value]="brithdayT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>HN</mat-label>
-              <input matInput [value]="hnT" readonly="true">
-            </mat-form-field>
 
-            <mat-form-field appearance="outline" style="padding-left: 10px;width: 422px;">
-              <mat-label>Name</mat-label>
-              <input matInput [value]="nameT" readonly="true">
-            </mat-form-field> -->
 
 
 
@@ -167,7 +160,7 @@
             <ng-container matColumnDef="orderitemname">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
               <td mat-cell *matCellDef="let element"> <span fxFlexLayout="row" matTooltip={{element.orderitemname}}>
-                  {{ (element.orderitemname.length>35)? (element.orderitemname | slice:0:35)+'..':(element.orderitemname) }}
+                  {{ (element.orderitemname.length>15)? (element.orderitemname | slice:0:15)+'..':(element.orderitemname) }}
                 </span></td>
             </ng-container>
 

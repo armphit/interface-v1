@@ -56,7 +56,10 @@ tr:hover {
 //   // padding-left: 20px !important;
 // }
 
+table {
+  width: 100% !important;
 
+}
 
 mat-form-field {
   line-height: unset !important;
@@ -67,3 +70,30 @@ mat-form-field {
   color: #053742 !important;
   font-weight: bold !important;
 }
+
+.ng-select .ng-select-container .ng-value-container .ng-input>input {
+  cursor: pointer !important;
+}
+
+.ng-select.ng-select-single .ng-select-container {
+  cursor: pointer !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle,
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
+.mat-radio-button.mat-accent:active .mat-radio-persistent-ripple .mat-radio-outer-circle {
+  background-color: #3f51b5 !important;
+
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #3f51b5 !important;
+}
+
+.modal-backdrop {
+  z-index: -1 !important;
+}
+
+
+@import "~@ng-select/ng-select/themes/default.theme.css";

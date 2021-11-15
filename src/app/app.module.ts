@@ -7,6 +7,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModules } from './materialModule';
 import { DrugAutoComponent } from './pages/drug-auto/drug-auto.component';
 import { DrugManualComponent } from './pages/drug-manual/drug-manual.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent, DrugAutoComponent, DrugManualComponent],
@@ -15,8 +17,9 @@ import { DrugManualComponent } from './pages/drug-manual/drug-manual.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     MaterialModules,
+    NgSelectModule,
   ],
-  providers: [],
+  providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

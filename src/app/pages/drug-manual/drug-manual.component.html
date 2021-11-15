@@ -2,90 +2,88 @@
   <mat-grid-tile>
 
     <div class="container">
+      <form [formGroup]="inputGroup" (ngSubmit)="inputGroup.valid ? submitInput() :''">
+        <div class="panel panel-info" style="min-height: 707px;">
+          <div class="panel-heading" style="padding-top:50px;">
+            <mat-radio-group [(ngModel)]="selectedItem" (ngModelChange)="onChangeItem()"
+              [ngModelOptions]="{standalone: true}">
+              <mat-radio-button value="1" style="padding-bottom: 40px;font-size: 25px;">Auto Input</mat-radio-button>
+              <mat-radio-button value="2" style="padding-bottom: 40px;font-size: 25px;padding: 10px;">Manual Input
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="panel-body" style="color: #000;">
 
-      <div class="panel panel-default">
-        <div class="panel-body" style="color: #000;">
-          <mat-radio-group [(ngModel)]="selectedItem">
-            <mat-radio-button value="1" style="padding: 10px;">Auto</mat-radio-button>
-            <mat-radio-button value="2" style="padding: 10px;">Manual</mat-radio-button>
-          </mat-radio-group>
+            <div class="form-group" *ngIf="selectedItem === '1'">
+              <label for="usr">HN:</label>
+              <ng-select [items]="newData" (ngModelChange)="onChange($event)" [(ngModel)]="selectedValues"
+                style="cursor: pointer" [ngModelOptions]="{standalone: true}" bindLabel="hn" bindValue="typeId"
+                placeholder="Select HN">
+              </ng-select>
 
+            </div>
+            <br>
+            <mat-form-field class="form-field-width" class="form-field-width" appearance="outline"
+              *ngIf="selectedItem === '2'">
+              <mat-label>HN</mat-label>
+              <input matInput style="width: 170px;" placeholder="HN" formControlName="hn">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+            <br *ngIf="selectedItem === '2'">
 
-          <!-- <div class="row">
-            <div class="col-lg-9">
-              <mat-form-field appearance="outline">
-                <mat-label>Barcode</mat-label>
-                <input matInput #swiper>
+            <mat-form-field class="form-field-width" class="form-field-width" appearance="outline">
+              <mat-label>NAME</mat-label>
+              <input matInput style="width: 170px;" placeholder="NAME" formControlName="name">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+            <br>
 
+            <mat-form-field class="form-field-width" class="form-field-width" appearance="outline"
+              *ngIf="selectedItem === '1'">
+              <mat-label>BirthDate</mat-label>
+              <input matInput style="width: 170px;" placeholder="BirthDate" formControlName="birth">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
 
-                <div style="font-size: 44px;" matSuffix>
-                  <i class="fas fa-barcode" matSuffix style="width: 50px;"></i>
-                </div>
+            <div *ngIf="selectedItem === '2'">
 
+              <br>
+              <mat-form-field class="form-field-width" class="form-field-width" style="width: 30%;">
+                <mat-label>Choose a Birthdate</mat-label>
+                <input matInput style="width: 170px;" [matDatepicker]="picker" formControlName="birth"
+                  (dateChange)="startChange($event)">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
             </div>
-            <div class="col-lg-3">
+            <br>
+            <mat-form-field class="form-field-width" class="form-field-width" appearance="outline">
+              <mat-label>AGE</mat-label>
+              <input matInput style="width: 170px;" placeholder="AGE" formControlName="age" readonly>
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+            <br>
 
-              <mat-form-field class="example-full-width" style="float: right;">
-                <input matInput (keyup)="applyFilter($event)" #input>
-                <mat-placeholder>Search</mat-placeholder>
-                <mat-icon matSuffix style="font-size: 1.2em">search</mat-icon>
-              </mat-form-field>
+            <div class="form-group">
+              <label for="usr">Sex:</label>
+              <br>
+              <mat-radio-group [(ngModel)]="selectedSex" [ngModelOptions]="{standalone: true}" required>
+                <mat-radio-button value="M" style="padding: 10px;">ชาย</mat-radio-button>
+                <mat-radio-button value="F" style="padding: 10px;">หญิง</mat-radio-button>
+              </mat-radio-group>
+            </div>
 
+
+          </div>
+          <div class="panel-footer" *ngIf="selectedItem === '2'" style="background-color: white;">
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" class="btn btn-danger" style="margin-left: 10px;">Cancel</button>
             </div>
           </div>
 
-
-          <table mat-table [dataSource]="dataSource" #MatSort="matSort" matSort
-            (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" matTableExporter
-            matSortActive="readdatetime" matSortDirection="desc">
-
-            <ng-container matColumnDef="indexrow">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
-              <td mat-cell *matCellDef="let element">{{element.indexrow}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="hn">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>HN</th>
-              <td mat-cell *matCellDef="let element">{{element.hn}}</td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="patientname">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Patient Name</th>
-              <td mat-cell *matCellDef="let element">
-                <div fxFlexLayout="row" class="truncate" matTooltip={{element.patientname}}>
-                  {{element.patientname}}
-                </div>
-              </td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="readdatetime">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-              <td mat-cell *matCellDef="let element">{{element.readdatetime}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="sendMachine">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-              <td mat-cell *matCellDef="let element">
-                <mat-icon style="color: green;" *ngIf="element.sendMachine =='Y'">check_circle</mat-icon>
-              </td>
-
-            </ng-container>
-
-
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="highlight(row)"
-              [ngClass]="{'highlightTableColor': selectedRowIndex == row.indexrow}">
-            </tr>
-
-          </table>
-          <mat-paginator #MatPaginator="matPaginator" [length]="10" [pageSize]="10" showFirstLastButtons>
-          </mat-paginator> -->
         </div>
-      </div>
+      </form>
     </div>
 
 
@@ -94,124 +92,195 @@
 
   <mat-grid-tile>
     <div class="container">
-      <div class="panel panel-info">
-        <div class="panel-heading">
-
-          <!--
-          <div class="example-container">
-
-            <div class="form-row">
-              <div class="col-md-4 mb-3">
-                <label for="validationCustom01">PrescriptionNo.</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="prescriptionnoT"
-                  readonly="true">
-              </div>
-              <div class="col-md-4 mb-3">
-                <label for="validationCustom02">Sex</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="sexT" readonly="true">
-
-              </div>
-              <div class="col-md-4 mb-3">
-                <label for="validationCustom02">BirthDate</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="brithdayT" readonly="true">
-
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="col-md-4 mb-3">
-                <label for="validationCustom01">HN</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="hnT" readonly="true">
-              </div>
-              <div class="col-md-8 mb-3">
-                <label for="validationCustom02">Name</label>
-                <input type="text" class="form-control" style="font-weight:bold;" [value]="nameT" readonly="true">
-
-              </div>
-            </div> -->
-          <!-- <mat-form-field appearance="outline">
-              <mat-label>PrescriptionNo.</mat-label>
-              <input matInput [value]="prescriptionnoT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="padding-left: 10px;">
-              <mat-label>Sex</mat-label>
-              <input matInput [value]="sexT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline" style="padding-left: 10px;">
-              <mat-label>BirthDate</mat-label>
-              <input matInput [value]="brithdayT" readonly="true">
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <mat-label>HN</mat-label>
-              <input matInput [value]="hnT" readonly="true">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" style="padding-left: 10px;width: 422px;">
-              <mat-label>Name</mat-label>
-              <input matInput [value]="nameT" readonly="true">
-            </mat-form-field> -->
-
-
-
-
-          <!-- </div>
-        </div>
+      <div class="panel panel-default" style="min-height: 707px;">
         <div class="panel-body">
-          <table mat-table [dataSource]="dataSource2" #MatSort2="matSort" matSort
-            (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" matTableExporter
-            matSortActive="readdatetime" matSortDirection="desc">
-            <ng-container matColumnDef="num">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
-              <td mat-cell *matCellDef="let element; let i = index">
-                {{paginator2.pageIndex == 0 ? i + 1 : 1 + i + paginator2.pageIndex * paginator2.pageSize}}
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="orderitemcode">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
-              <td mat-cell *matCellDef="let element">{{element.orderitemcode}}</td>
-            </ng-container>
 
-            <ng-container matColumnDef="orderitemname">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-              <td mat-cell *matCellDef="let element"> <span fxFlexLayout="row" matTooltip={{element.orderitemname}}>
-                  {{ (element.orderitemname.length>35)? (element.orderitemname | slice:0:35)+'..':(element.orderitemname) }}
-                </span></td>
-            </ng-container>
+          <div>
+            <div class="card card-body">
+              <div class="row">
+                <div class="col-lg-9">
+                </div>
+                <div class="col-lg-3" *ngIf="dataDrug">
+                  <mat-form-field class="form-field-width" class="form-field-width" class="example-full-width"
+                    style="float: right;">
+                    <input matInput style="width: 170px;" (keyup)="applyFilter($event)" cdkFocusInitial #input
+                      [(ngModel)]="selected">
+                    <mat-placeholder>ค้นหา</mat-placeholder>
+                    <mat-icon matSuffix style="font-size: 1.2em">search</mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div style="overflow: auto;margin: 10px;">
+                <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+                  <!-- Position Column -->
+                  <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <!-- <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+                      </mat-checkbox> -->
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="showOptions($event,row) ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+                      </mat-checkbox>
+
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Code">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding-left: 10px;"> Drug Code </th>
+                    <td mat-cell *matCellDef="let element" style="padding-left: 20px;padding-right: 20px;">
+                      {{element.code}}
+                    </td>
+                  </ng-container>
+
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="Name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding-left: 10px;">Device Name </th>
+                    <td mat-cell *matCellDef="let element" style="padding-left: 20px;padding-right: 20px;">
+                      {{element.Name}}
+                    </td>
+                  </ng-container>
+
+                  <!-- Weight Column -->
+                  <ng-container matColumnDef="Unit">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding-left: 10px;"> Unit </th>
+                    <td mat-cell *matCellDef="let element" style="padding-left: 20px;padding-right: 20px;">
+                      {{element.unit}}
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="Spec">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding-left: 10px;"> Spec </th>
+                    <td mat-cell *matCellDef="let element" style="padding-left: 20px;padding-right: 20px;">
+                      {{element.spec}}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="firmName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style="padding-left: 10px;"> Firm Name </th>
+                    <td mat-cell *matCellDef="let element" style="padding-left: 20px;padding-right: 20px;">
+                      {{element.firmName}}
+                    </td>
+                  </ng-container>
 
 
-            <ng-container matColumnDef="orderqty">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>QTY</th>
-              <td mat-cell *matCellDef="let element">
-                {{element.orderqty}}
-
-              </td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="orderunitcode">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Unit</th>
-              <td mat-cell *matCellDef="let element">{{element.orderunitcode}}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="ordercreatedate">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
-              <td mat-cell *matCellDef="let element">
-                {{element.ordercreatedate}}
-              </td>
-
-            </ng-container>
 
 
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns2;">
-            </tr>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
 
-          </table>
-          <mat-paginator #MatPaginator2="matPaginator" [length]="8" [pageSize]="8" showFirstLastButtons>
-          </mat-paginator> -->
+                <mat-paginator [length]="8" [pageSize]="8" showFirstLastButtons>
+                </mat-paginator>
+              </div>
+
+              <button style="margin: 10px;" class="btn btn-primary" type="button" data-toggle="modal"
+                data-target="#myModal" *ngIf="value.length!==0" (click)="edit()">
+                Send
+              </button>
+              <button style="margin: 10px;" class="btn btn-primary" type="button" *ngIf="value.length===0"
+                [disabled]="selectedValues === null" (click)="noDrug()">
+                Send
+              </button>
+            </div>
+          </div>
+
+
         </div>
+
       </div>
     </div>
   </mat-grid-tile>
 
 </mat-grid-list>
+
+<div class="modal" id="myModal" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <form [formGroup]="inputGroup" (ngSubmit)="inputGroup.valid ? send() : ''">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h1 class="modal-title">Detail</h1>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="example-container">
+
+
+
+            <!--
+            <mat-form-field appearance="outline" style="padding-left: 10px;">
+              <mat-label>HN</mat-label>
+              <input matInput type="number" formControlName="hn">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" style="padding-left: 10px;">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name">
+
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" style="padding-left: 10px;">
+              <mat-label>Age</mat-label>
+              <input matInput type="number" formControlName="age">
+            </mat-form-field> -->
+
+            <!-- <label style="padding-left: 10px;">Sex: </label>
+            <mat-radio-group formControlName="sexS">
+              <mat-radio-button style="padding-left: 10px;" value="M">Male</mat-radio-button>
+              <mat-radio-button style="padding-left: 10px;" value="F">Female</mat-radio-button>
+            </mat-radio-group> -->
+
+
+
+
+
+            <table class="table  table-bordered table-lg">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>drugCode</th>
+                  <th>drugName</th>
+                  <th>QTY</th>
+                  <th>Unit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let i of value; let x = index">
+                  <td scope="row" style="padding-top: 15px">{{ x + 1 }}</td>
+                  <td style="padding-top: 15px">
+                    {{ i.code }}
+                  </td>
+                  <td style="padding-top: 15px">
+                    {{ i.Name }}
+                  </td>
+                  <td style="padding-top: 15px">
+                    {{ i.Qty }}
+                  </td>
+                  <td style="padding-top: 15px">
+                    {{ i.unit }}
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+</div>
