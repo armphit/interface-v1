@@ -1,0 +1,30 @@
+<!-- <mat-toolbar color="primary">
+
+  <span>Interface GD4</span>
+  <button style="float: right;" type="button" class="btn btn-outline-danger">Sign Out</button>
+</mat-toolbar> -->
+
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <h3 [style.color]="'white'">Interface GD4</h3>
+    <div class="parent">
+      <div class="children right-children">
+
+        <button type="button" class="btn btn-danger" (click)="signOut()"><i class="fas fa-sign-out-alt"></i> Sign
+          Out</button>
+      </div>
+    </div>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<!-- <a mat-tab-link *ngFor="let link of navLinks" [routerLink]="link.path" routerLinkActive #rla="routerLinkActive"
+  [active]="rla.isActive">
+  {{link.label}}
+</a> -->
+<nav mat-tab-nav-bar>
+  <a mat-tab-link *ngFor="let link of navLinks" [routerLink]="link.path" [routerLinkActive]="['active']">
+    {{link.label}}
+  </a>
+</nav>
+
+<router-outlet></router-outlet>

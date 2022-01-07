@@ -1,15 +1,5 @@
-<mat-toolbar color="primary">
+<div style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
+  <router-outlet></router-outlet>
+  <ngx-loading [show]="https.loading"></ngx-loading>
 
-  <span>Interface GD4</span>
-
-</mat-toolbar>
-
-
-<nav mat-tab-nav-bar>
-  <a mat-tab-link *ngFor="let link of navLinks" [routerLink]="link.path" [routerLinkActive]="['active']">
-    {{link.label}}
-  </a>
-</nav>
-
-
-<router-outlet></router-outlet>
+</div>

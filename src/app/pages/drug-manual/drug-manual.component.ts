@@ -1,6 +1,7 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnInit,
@@ -52,7 +53,9 @@ export class DrugManualComponent implements OnInit {
   @ViewChild(MatSort)
   sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+  @ViewChild('swiper') swiper!: ElementRef;
+  checkedJvm = true;
+  checkedDih = true;
   constructor(
     private config: NgSelectConfig,
     private http: HttpsService,
@@ -79,7 +82,7 @@ export class DrugManualComponent implements OnInit {
   }
   newData: any = null;
   public async getHN() {
-    let getData: any = await this.http.get('patienListHN');
+    let getData: any = await this.http.get('listDataPatien2');
     this.hnList = getData.response.result;
     this.newData = this.hnList.map(
       (elm: {
@@ -106,6 +109,7 @@ export class DrugManualComponent implements OnInit {
     );
   }
   birthDate: any = null;
+  clickHn = true;
   public onChange(event: any) {
     this.selectedValues = event;
     // this.valueChange.emit(this.selectedValues);
@@ -128,6 +132,7 @@ export class DrugManualComponent implements OnInit {
       this.selectedSex = splitted[6];
     }
     this.birthDate = splitted[4] + '-' + splitted[3] + '-' + splitted[2];
+    this.clickHn = false;
   }
   public onChangeItem() {
     this.inputGroup.reset();
@@ -135,7 +140,9 @@ export class DrugManualComponent implements OnInit {
     this.selectedValues = null;
     this.dataDrug = null;
     this.birthDate = null;
+    this.clickHn = true;
     this.value = [];
+    this.isDisabled = true;
     this.getData();
   }
 
@@ -177,13 +184,34 @@ export class DrugManualComponent implements OnInit {
 
   value = new Array();
   value2 = new Array();
+  isDisabled = true;
   selection: any = new SelectionModel<PeriodicElement>(true, []);
 
   async showOptions(e: any, val: any): Promise<void> {
     if (e.checked) {
+      let formData = new FormData();
+      formData.append('drugCode', val.code.trim());
+
+      let dataDrug: any = await this.http.post('listDrugAll101', formData);
+      let pack = null;
+      if (dataDrug.connect) {
+        if (dataDrug.response.rowCount > 0) {
+          pack =
+            'Pack : ' +
+            Math.floor(dataDrug.response.result[0].pack) +
+            ' ' +
+            dataDrug.response.result[0].dosageunitcode;
+        } else {
+          pack = 'ไมมีแพ็คยา';
+        }
+      } else {
+        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+      }
+
       const { value: text } = await Swal.fire({
-        input: 'text',
-        inputLabel: 'จำนวนยา',
+        input: 'number',
+        title: 'จำนวนยา',
+        inputLabel: `${pack}`,
         inputPlaceholder: '',
         allowOutsideClick: false,
         inputValidator: (value) => {
@@ -220,6 +248,15 @@ export class DrugManualComponent implements OnInit {
         this.value.splice(index, 1);
       }
     }
+    if (this.value.length > 0) {
+      this.isDisabled = false;
+    } else {
+      this.isDisabled = true;
+    }
+    this.selected = '';
+    setTimeout(() => {
+      this.swiper.nativeElement.focus();
+    }, 1200);
   }
 
   edit() {
@@ -242,7 +279,7 @@ export class DrugManualComponent implements OnInit {
   }
 
   submitInput() {
-    this.selectedValues = 1;
+    this.clickHn = false;
   }
 
   startChange(e: any) {
@@ -294,34 +331,70 @@ export class DrugManualComponent implements OnInit {
         formData
       );
 
+      let numpack: number = 0;
       if (listDrugSE.response.rowCount > 0) {
-        for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
-          var se: any = {};
+        // for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
+        var se: any = {};
 
-          if (
-            this.value[i].Qty >=
-            Number(listDrugSE.response.result[xx].HisPackageRatio)
-          ) {
-            se.code = listDrugSE.response.result[xx].drugCode;
-            se.Name = this.value[i].Name;
-            se.alias = this.value[i].alias;
-            se.firmName = this.value[i].firmName;
-            se.method = this.value[i].method;
-            se.note = this.value[i].note;
-            se.spec = this.value[i].spec;
-            se.type = this.value[i].type;
-            se.unit = this.value[i].unit;
-            se.Qty =
-              Math.floor(
-                this.value[i].Qty /
-                  listDrugSE.response.result[xx].HisPackageRatio
-              ) * listDrugSE.response.result[xx].HisPackageRatio;
-            this.value[i].Qty =
-              this.value[i].Qty %
-              listDrugSE.response.result[xx].HisPackageRatio;
-            // console.log(this.numArr);
-            codeArrPush.push(se);
-          }
+        if (
+          this.value[i].Qty >=
+          Number(listDrugSE.response.result[0].HisPackageRatio)
+        ) {
+          se.code = listDrugSE.response.result[0].drugCode;
+          se.Name = this.value[i].Name;
+          se.alias = this.value[i].alias;
+          se.firmName = this.value[i].firmName;
+          se.method = this.value[i].method;
+          se.note = this.value[i].note;
+          se.spec = this.value[i].spec;
+          se.type = this.value[i].type;
+          se.unit = this.value[i].unit;
+          se.Qty =
+            Math.floor(
+              this.value[i].Qty / listDrugSE.response.result[0].HisPackageRatio
+            ) * listDrugSE.response.result[0].HisPackageRatio;
+          this.value[i].Qty =
+            this.value[i].Qty % listDrugSE.response.result[0].HisPackageRatio;
+          codeArrPush.push(se);
+        }
+        // }
+      }
+
+      formData.append('prepack', this.value[i].code.trim() + '-');
+      let listDrugPre: any = await this.http.post('PrepackListStock', formData);
+      let seCheckOutOfStock: any = await this.http.post(
+        'seCheckOutOfStock',
+        formData
+      );
+
+      // let numPack = listDrugPre.response.result[0].HisPackageRatio;
+
+      if (listDrugPre.response.rowCount > 0) {
+        var pre: any = {};
+
+        if (
+          this.value[i].Qty >=
+            Number(listDrugPre.response.result[0].HisPackageRatio) &&
+          this.value[i].Qty <=
+            Number(seCheckOutOfStock.response.result[0].Quantity)
+        ) {
+          pre.code = listDrugPre.response.result[0].drugCode;
+          pre.Name = this.value[i].Name;
+          pre.alias = this.value[i].alias;
+          pre.firmName = this.value[i].firmName;
+          pre.method = this.value[i].method;
+          pre.note = this.value[i].note;
+          pre.spec = this.value[i].spec;
+          pre.type = this.value[i].type;
+          pre.unit = this.value[i].unit;
+          pre.Qty =
+            Math.floor(
+              this.value[i].Qty / listDrugPre.response.result[0].HisPackageRatio
+            ) * listDrugPre.response.result[0].HisPackageRatio;
+          this.value[i].Qty =
+            this.value[i].Qty % listDrugPre.response.result[0].HisPackageRatio;
+
+          codeArrPush.push(pre);
         }
       }
 
@@ -353,6 +426,7 @@ export class DrugManualComponent implements OnInit {
           lca.unit = this.value[i].unit;
           // console.log(this.numArr);
           codeArrPush.push(lca);
+
           this.value[i].Qty =
             this.value[i].Qty % listDrugLCA.response.result[0].packageRatio;
           // if (
@@ -431,12 +505,13 @@ export class DrugManualComponent implements OnInit {
 
     for (let index = 0; index < codeArrPush.length; index++) {
       codeArrPush[index].itemNo = index + 1;
+
       let value = {
         drug: codeArrPush[index],
       };
       this.value2.push(value);
     }
-    // console.log(codeArrPush);
+
     let DataJV: any = null;
     // let DataJV2: any = null;
     // let DataFinal: any = [];
@@ -445,11 +520,21 @@ export class DrugManualComponent implements OnInit {
       DataJV = codeArr.join('\r\n');
     }
 
-    // console.log(DataJV);
+    // patName:
+    // this.inputGroup.value.name.length > 30
+    //   ? this.inputGroup.value.name.substring(0, 30) + '...'
+    //   : this.inputGroup.value.name,
+
+    // let a = 'พระครู ศีลคุณวิสุทธิ์ (ชูชีพ) กลิ่นจันทร์';
+    // console.log(a.length);
+
     let jsonDrug = {
       patient: {
         patID: this.inputGroup.value.hn,
-        patName: this.inputGroup.value.name,
+        patName:
+          this.inputGroup.value.name.length > 40
+            ? this.inputGroup.value.name.substring(0, 37) + '...'
+            : this.inputGroup.value.name,
         gender: this.selectedSex,
         birthday: this.birthDate,
         age: this.inputGroup.value.age,
@@ -465,7 +550,7 @@ export class DrugManualComponent implements OnInit {
           windowNo: '',
           paymentIP: '',
           paymentDT: datePayment,
-          outpNo: '3',
+          outpNo: '',
           visitNo: '',
           deptCode: '',
           deptName: '',
@@ -478,34 +563,55 @@ export class DrugManualComponent implements OnInit {
     };
 
     let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
-    // console.log(xmlDrug);
+
     let getDataJV: any = null;
     let getDataDIH: any = null;
-    if (DataJV) {
-      let dataJv = { data: DataJV };
 
-      getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    }
-    let dataXml = { data: xmlDrug };
-    getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+    if (this.checkedDih == true && this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+      }
 
-    if (getDataJV) {
-      if (getDataJV.connect == true && getDataDIH.connect == true) {
-        if (getDataJV.response == 1 && getDataDIH.response == 1) {
-          Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-          let win: any = window;
-          win.$('#myModal').modal('hide');
-        } else if (getDataJV.response == 0 && getDataDIH.response == 0) {
-          Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+      let dataXml = { data: xmlDrug };
+      getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+
+      if (getDataJV) {
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else if (getDataJV.response == 0) {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
         }
       } else {
-        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        if (getDataDIH.connect == true) {
+          if (getDataDIH.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
       }
-    } else {
+    } else if (this.checkedDih == true && this.checkedJvm == false) {
+      let dataXml = { data: xmlDrug };
+      getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+
       if (getDataDIH.connect == true) {
         if (getDataDIH.response == 1) {
           Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
           let win: any = window;
+          win.$('.modal-backdrop').remove();
           win.$('#myModal').modal('hide');
         } else {
           Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
@@ -513,10 +619,28 @@ export class DrugManualComponent implements OnInit {
       } else {
         Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
       }
+    } else if (this.checkedDih == false && this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else if (getDataJV.response == 0) {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      } else {
+        Swal.fire('ข้อมูลไม่ถูกต้อง', '', 'error');
+        let win: any = window;
+        win.$('#myModal').modal('hide');
+      }
     }
-
-    // let win: any = window;
-    // win.$('#myModal').modal('hide');
 
     this.value2 = [];
     this.value = [];
@@ -527,5 +651,7 @@ export class DrugManualComponent implements OnInit {
     this.birthDate = null;
     this.getData();
     this.selected = '';
+    this.clickHn = true;
+    this.isDisabled = true;
   }
 }

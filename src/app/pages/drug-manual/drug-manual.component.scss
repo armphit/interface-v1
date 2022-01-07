@@ -21,9 +21,12 @@
   min-width: 300px;
 }
 
-.modal-backdrop {
-  z-index: -1 !important;
-}
+
+
+
+// .modal-backdrop {
+//   z-index: -1 !important;
+// }
 
 .form-field-width {
   width: 100%;
@@ -36,4 +39,36 @@
 table {
   width: 100%;
 
+}
+
+.truncate2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.truncate2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 10px;
+}
+
+.example-section {
+  margin: 12px 0;
+}
+
+.example-margin {
+  margin: 0 12px;
+}
+
+.a-body {
+
+  min-height: 614px;
+}
+
+.b-body {
+
+  min-height: 750px;
 }

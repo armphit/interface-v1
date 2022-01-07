@@ -44,6 +44,10 @@ tr:hover {
   background-color: #e7e4e4;
 }
 
+.swal-wide {
+  width: 100px !important;
+}
+
 // th {
 //   border-right: 1px solid #E0E0E0;
 //   background-color: #e7e4e488;
@@ -91,9 +95,8 @@ mat-form-field {
   border-color: #3f51b5 !important;
 }
 
-.modal-backdrop {
-  z-index: -1 !important;
-}
+
+
 
 
 @import "~@ng-select/ng-select/themes/default.theme.css";

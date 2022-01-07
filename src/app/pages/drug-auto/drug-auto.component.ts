@@ -7,26 +7,16 @@ import { HttpsService } from 'src/app/services/https.service';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
 import * as JsonToXML from 'js2xmlparser';
+import { SelectionModel } from '@angular/cdk/collections';
 export interface PeriodicElement {
-  hn: number;
-  patientname: string;
-  readdatetime: number;
+  select: string;
+  num: number;
+  orderitemcode: string;
+  orderitemname: string;
+  orderqty: string;
+  orderunitcode: string;
+  ordercreatedate: string;
 }
-const ELEMENT_DATA: PeriodicElement[] = [
-  { hn: 1, patientname: 'Hydrogen', readdatetime: 1.0079 },
-  { hn: 2, patientname: 'Helium', readdatetime: 4.0026 },
-  { hn: 3, patientname: 'Lithium', readdatetime: 6.941 },
-  { hn: 4, patientname: 'Beryllium', readdatetime: 9.0122 },
-  { hn: 5, patientname: 'Boron', readdatetime: 10.811 },
-  { hn: 6, patientname: 'Carbon', readdatetime: 12.0107 },
-  { hn: 7, patientname: 'Nitrogen', readdatetime: 14.0067 },
-  { hn: 8, patientname: 'Oxygen', readdatetime: 15.9994 },
-  { hn: 9, patientname: 'Fluorine', readdatetime: 18.9984 },
-  { hn: 10, patientname: 'Neon', readdatetime: 20.1797 },
-  { hn: 11, patientname: 'Oxygen', readdatetime: 15.9994 },
-  { hn: 12, patientname: 'Fluorine', readdatetime: 18.9984 },
-  { hn: 13, patientname: 'Neon', readdatetime: 20.1797 },
-];
 
 @Component({
   selector: 'app-drug-auto',
@@ -43,6 +33,7 @@ export class DrugAutoComponent implements OnInit {
     'sendMachine',
   ];
   displayedColumns2: string[] = [
+    // 'select',
     'num',
     'orderitemcode',
     'orderitemname',
@@ -85,11 +76,12 @@ export class DrugAutoComponent implements OnInit {
   public dataDrug: any = null;
 
   public async getData() {
-    let getData: any = await this.http.get('patienListHN');
+    let getData: any = await this.http.get('listDataPatien2');
 
     if (getData.connect) {
       if (getData.response.rowCount > 0) {
         this.dataDrug = getData.response.result;
+        // console.log(this.dataDrug);
         this.getDataPatien(this.dataDrug[0].hn, this.dataDrug[0].patientname);
         this.dataSource = new MatTableDataSource(this.dataDrug);
         this.dataSource.sort = this.sort;
@@ -168,60 +160,77 @@ export class DrugAutoComponent implements OnInit {
   value = new Array();
   value2 = new Array();
   async dataDrugSend() {
-    for (let i = 0; i < this.dataDrugPatien.length; i++) {
-      let dataForm = new FormData();
-      dataForm.append('drugCode', this.dataDrugPatien[i].orderitemcode);
-      let getData: any = await this.http.post('listDrugAll101', dataForm);
+    // console.log(this.selection.selected);
 
-      if (getData.connect) {
-        if (
-          getData.response.rowCount > 0 &&
-          Number(this.dataDrugPatien[i].orderqty) > 0
-        ) {
-          let drug = {
-            Name: this.dataDrugPatien[i].orderitemname,
-            Qty: this.dataDrugPatien[i].orderqty,
-            alias: '',
-            code: this.dataDrugPatien[i].orderitemcode,
-            firmName: getData.response.result[0].firmname,
-            method: '',
-            note: '',
-            spec: getData.response.result[0].Strength,
-            type: '',
-            unit: this.dataDrugPatien[i].orderunitcode,
-          };
-          this.value.push(drug);
+    // this.selection.selected.forEach((s: any) => console.log(s));
+    if (this.dataDrugPatien.length > 0) {
+      for (let i = 0; i < this.dataDrugPatien.length; i++) {
+        let dataForm = new FormData();
+        dataForm.append('drugCode', this.dataDrugPatien[i].orderitemcode);
+        let getData: any = await this.http.post('listDrugAll101', dataForm);
+
+        if (getData.connect) {
+          if (
+            getData.response.rowCount > 0 &&
+            Number(this.dataDrugPatien[i].orderqty) > 0
+          ) {
+            let drug = {
+              Name: this.dataDrugPatien[i].orderitemname,
+              Qty: this.dataDrugPatien[i].orderqty,
+              alias: '',
+              code: this.dataDrugPatien[i].orderitemcode,
+              firmName: getData.response.result[0].firmname,
+              method: '',
+              note: '',
+              spec: getData.response.result[0].Strength,
+              type: '',
+              unit: this.dataDrugPatien[i].orderunitcode,
+            };
+            this.value.push(drug);
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้!', '', 'error');
         }
-      } else {
-        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้!', '', 'error');
       }
-    }
 
+      Swal.fire({
+        title: 'Do you want to send the changes?',
+        showCancelButton: true,
+        confirmButtonText: 'Send',
+        allowOutsideClick: false,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          console.log(this.value);
+          this.value = [];
+          this.selection = new SelectionModel<PeriodicElement>(true, []);
+          // this.send();
+        } else {
+          this.value = [];
+        }
+        // else if (result.isDenied) {
+        //   Swal.fire('Changes are not saved', '', 'info')
+        // }
+      });
+    } else {
+      Swal.fire('ไม่มีข้อมูลยา!', '', 'error');
+    }
+  }
+
+  test() {
     Swal.fire({
-      title: 'Do you want to send the changes?',
-      showCancelButton: true,
-      confirmButtonText: 'Send',
-      allowOutsideClick: false,
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        this.send();
-        // Swal.fire({
-        //   position: 'center',
-        //   icon: 'success',
-        //   title: 'Send Complete',
-        //   showConfirmButton: false,
-        //   timer: 1000,
-        // });
-      } else {
-        this.value = [];
-      }
-      // else if (result.isDenied) {
-      //   Swal.fire('Changes are not saved', '', 'info')
-      // }
+      text: 'Toast with custom target',
+      target: '#custom-target',
+      customClass: {
+        container: 'position-absolute',
+      },
+      toast: true,
+      position: 'bottom-right',
     });
   }
 
+  checkedJvm = true;
+  checkedDih = true;
   async send() {
     const momentDate = new Date();
     let datePayment = moment(momentDate).format('YYYY-MM-DD');
@@ -260,33 +269,61 @@ export class DrugAutoComponent implements OnInit {
       );
 
       if (listDrugSE.response.rowCount > 0) {
-        for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
-          var se: any = {};
+        // for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
+        var se: any = {};
 
-          if (
-            this.value[i].Qty >=
-            Number(listDrugSE.response.result[xx].HisPackageRatio)
-          ) {
-            se.code = listDrugSE.response.result[xx].drugCode;
-            se.Name = this.value[i].Name;
-            se.alias = this.value[i].alias;
-            se.firmName = this.value[i].firmName;
-            se.method = this.value[i].method;
-            se.note = this.value[i].note;
-            se.spec = this.value[i].spec;
-            se.type = this.value[i].type;
-            se.unit = this.value[i].unit;
-            se.Qty =
-              Math.floor(
-                this.value[i].Qty /
-                  listDrugSE.response.result[xx].HisPackageRatio
-              ) * listDrugSE.response.result[xx].HisPackageRatio;
-            this.value[i].Qty =
-              this.value[i].Qty %
-              listDrugSE.response.result[xx].HisPackageRatio;
-            // console.log(this.numArr);
-            codeArrPush.push(se);
-          }
+        if (
+          this.value[i].Qty >=
+          Number(listDrugSE.response.result[0].HisPackageRatio)
+        ) {
+          se.code = listDrugSE.response.result[0].drugCode;
+          se.Name = this.value[i].Name;
+          se.alias = this.value[i].alias;
+          se.firmName = this.value[i].firmName;
+          se.method = this.value[i].method;
+          se.note = this.value[i].note;
+          se.spec = this.value[i].spec;
+          se.type = this.value[i].type;
+          se.unit = this.value[i].unit;
+          se.Qty =
+            Math.floor(
+              this.value[i].Qty / listDrugSE.response.result[0].HisPackageRatio
+            ) * listDrugSE.response.result[0].HisPackageRatio;
+          this.value[i].Qty =
+            this.value[i].Qty % listDrugSE.response.result[0].HisPackageRatio;
+          // console.log(this.numArr);
+          codeArrPush.push(se);
+        }
+        // }
+      }
+
+      formData.append('prepack', this.value[i].code.trim() + '-');
+      let listDrugPre: any = await this.http.post('PrepackListStock', formData);
+
+      if (listDrugPre.response.rowCount > 0) {
+        var pre: any = {};
+
+        if (
+          this.value[i].Qty >=
+          Number(listDrugPre.response.result[0].HisPackageRatio)
+        ) {
+          pre.code = listDrugPre.response.result[0]['drugCode'];
+          pre.Name = this.value[i].Name;
+          pre.alias = this.value[i].alias;
+          pre.firmName = this.value[i].firmName;
+          pre.method = this.value[i].method;
+          pre.note = this.value[i].note;
+          pre.spec = this.value[i].spec;
+          pre.type = this.value[i].type;
+          pre.unit = this.value[i].unit;
+          pre.Qty =
+            Math.floor(
+              this.value[i].Qty / listDrugPre.response.result[0].HisPackageRatio
+            ) * listDrugPre.response.result[0].HisPackageRatio;
+          this.value[i].Qty =
+            this.value[i].Qty % listDrugPre.response.result[0].HisPackageRatio;
+          // console.log(this.numArr);
+          codeArrPush.push(pre);
         }
       }
 
@@ -413,7 +450,10 @@ export class DrugAutoComponent implements OnInit {
     let jsonDrug = {
       patient: {
         patID: this.hnT,
-        patName: this.nameT,
+        patName:
+          this.nameT.length > 30
+            ? this.nameT.substring(0, 30) + '...'
+            : this.nameT,
         gender: this.dataDrugPatien[0].sex,
         birthday: this.dataDrugPatien[0].patientdob,
         age: age,
@@ -445,31 +485,52 @@ export class DrugAutoComponent implements OnInit {
 
     let getDataJV: any = null;
     let getDataDIH: any = null;
-    if (DataJV) {
-      let dataJv = { data: DataJV };
 
-      getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    }
-    let dataXml = { data: xmlDrug };
-    getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+    if (this.checkedDih == true && this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+      }
 
-    if (getDataJV) {
-      if (getDataJV.connect == true && getDataDIH.connect == true) {
-        if (getDataJV.response == 1 && getDataDIH.response == 1) {
-          Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-          // let win: any = window;
-          // win.$('#myModal').modal('hide');
-        } else if (getDataJV.response == 0 && getDataDIH.response == 0) {
-          Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+      let dataXml = { data: xmlDrug };
+      getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+
+      if (getDataJV) {
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else if (getDataJV.response == 0) {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
         }
       } else {
-        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        if (getDataDIH.connect == true) {
+          if (getDataDIH.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
       }
-    } else {
+    } else if (this.checkedDih == true && this.checkedJvm == false) {
+      let dataXml = { data: xmlDrug };
+      getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+
       if (getDataDIH.connect == true) {
         if (getDataDIH.response == 1) {
           Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
           let win: any = window;
+          win.$('.modal-backdrop').remove();
           win.$('#myModal').modal('hide');
         } else {
           Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
@@ -477,14 +538,81 @@ export class DrugAutoComponent implements OnInit {
       } else {
         Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
       }
+    } else if (this.checkedDih == false && this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+            let win: any = window;
+            win.$('.modal-backdrop').remove();
+            win.$('#myModal').modal('hide');
+          } else if (getDataJV.response == 0) {
+            Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      } else {
+        Swal.fire('ข้อมูลไม่ถูกต้อง', '', 'error');
+        let win: any = window;
+        win.$('#myModal').modal('hide');
+      }
     }
 
     this.value2 = [];
     this.value = [];
     this.dataDrug = null;
+    this.dataDrugPatien = null;
     this.nameT = '';
     this.hnT = '';
+    this.checkedDih = true;
+    this.checkedJvm = true;
+    this.selection = new SelectionModel<PeriodicElement>(true, []);
     // this.birthDate = null;
     this.getData();
+  }
+
+  public sendit(data: any): void {
+    setTimeout(() => console.log(data), 1000); // 2500 is millisecond
+  }
+
+  selection: any = new SelectionModel<PeriodicElement>(true, []);
+  async showOptions(e: any, val: any): Promise<void> {
+    if (e.checked) {
+      val.alias = '';
+      val.method = '';
+      val.type = '';
+      val.note = '';
+      val.Qty = '';
+
+      // val.itemNo = this.value.length + 1;
+
+      this.value.push(val);
+    } else {
+      let index = this.value.indexOf(val);
+      if (index > -1) {
+        this.value.splice(index, 1);
+      }
+    }
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource2.data.length;
+
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.dataSource2.data.forEach((row: any) => this.selection.select(row));
+  }
+  myModel: boolean = true;
+  logSelection() {
+    this.selection.selected.forEach((s: any) => console.log(s));
   }
 }
