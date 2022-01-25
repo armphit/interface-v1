@@ -71,8 +71,10 @@
 
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="highlight(row)"
-              [ngClass]="{'highlightTableColor': selectedRowIndex == row.indexrow}">
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;let i= index" (click)="highlight(row)"
+              [ngClass]="{'highlightTableColor': selectedRowIndex == row.indexrow}" tabindex="999"
+              (keydown.arrowdown)="arrowDownEvent(row, selectedRowIndex)"
+              (keydown.arrowup)="arrowUpEvent(row, selectedRowIndex)" (keydown.enter)="dataDrugSend()">
             </tr>
 
           </table>
@@ -151,7 +153,7 @@
           <table mat-table [dataSource]="dataSource2" #MatSort2="matSort" matSort
             (matSortChange)="announceSortChange($event)" class="mat-elevation-z8" matTableExporter
             matSortActive="readdatetime" matSortDirection="desc">
-            <!-- <ng-container matColumnDef="select">
+            <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue(true) && isAllSelected()"
@@ -166,7 +168,7 @@
                 </mat-checkbox>
 
               </td>
-            </ng-container> -->
+            </ng-container>
             <ng-container matColumnDef="num">
 
               <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
@@ -220,7 +222,7 @@
           </table>
           <mat-paginator #MatPaginator2="matPaginator" [length]="8" [pageSize]="8" showFirstLastButtons>
           </mat-paginator>
-          <button mat-raised-button (click)="logSelection()">Console Log Selected</button>
+          <!-- <button mat-raised-button (click)="logSelection()">Console Log Selected</button> -->
         </div>
       </div>
     </div>

@@ -22,6 +22,7 @@ import { NgSelectConfig } from '@ng-select/ng-select';
 import { HttpsService } from 'src/app/services/https.service';
 import Swal from 'sweetalert2';
 import * as moment from 'moment';
+// import 'moment/min/locales';
 import * as JsonToXML from 'js2xmlparser';
 
 export interface PeriodicElement {
@@ -305,6 +306,7 @@ export class DrugManualComponent implements OnInit {
     const momentDate = new Date();
     let datePayment = moment(momentDate).format('YYYY-MM-DD');
     let dateA = moment(momentDate).format('YYMMDD');
+    // let dateB = moment(momentDate).add(543, 'year').format('DD/MM/YYYY');
     let dateB = moment(momentDate).format('DD/MM/YYYY');
     let numRandom =
       '99' +
@@ -326,180 +328,242 @@ export class DrugManualComponent implements OnInit {
       let formData = new FormData();
       formData.append('code', this.value[i].code.trim());
 
-      let listDrugSE: any = await this.http.post(
-        'SEListStockPrepack',
-        formData
-      );
+      let notSent: any = await this.http.post('drugNotSent', formData);
+      if (notSent.response.rowCount === 0) {
+        let listDrugSE: any = await this.http.post(
+          'SEListStockPrepack',
+          formData
+        );
 
-      let numpack: number = 0;
-      if (listDrugSE.response.rowCount > 0) {
-        // for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
-        var se: any = {};
+        let numpack: number = 0;
+        if (listDrugSE.response.rowCount > 0) {
+          // for (let xx = 0; xx < listDrugSE.response.rowCount; xx++) {
+          var se: any = {};
 
-        if (
-          this.value[i].Qty >=
-          Number(listDrugSE.response.result[0].HisPackageRatio)
-        ) {
-          se.code = listDrugSE.response.result[0].drugCode;
-          se.Name = this.value[i].Name;
-          se.alias = this.value[i].alias;
-          se.firmName = this.value[i].firmName;
-          se.method = this.value[i].method;
-          se.note = this.value[i].note;
-          se.spec = this.value[i].spec;
-          se.type = this.value[i].type;
-          se.unit = this.value[i].unit;
-          se.Qty =
-            Math.floor(
-              this.value[i].Qty / listDrugSE.response.result[0].HisPackageRatio
-            ) * listDrugSE.response.result[0].HisPackageRatio;
-          this.value[i].Qty =
-            this.value[i].Qty % listDrugSE.response.result[0].HisPackageRatio;
-          codeArrPush.push(se);
-        }
-        // }
-      }
-
-      formData.append('prepack', this.value[i].code.trim() + '-');
-      let listDrugPre: any = await this.http.post('PrepackListStock', formData);
-      let seCheckOutOfStock: any = await this.http.post(
-        'seCheckOutOfStock',
-        formData
-      );
-
-      // let numPack = listDrugPre.response.result[0].HisPackageRatio;
-
-      if (listDrugPre.response.rowCount > 0) {
-        var pre: any = {};
-
-        if (
-          this.value[i].Qty >=
-            Number(listDrugPre.response.result[0].HisPackageRatio) &&
-          this.value[i].Qty <=
-            Number(seCheckOutOfStock.response.result[0].Quantity)
-        ) {
-          pre.code = listDrugPre.response.result[0].drugCode;
-          pre.Name = this.value[i].Name;
-          pre.alias = this.value[i].alias;
-          pre.firmName = this.value[i].firmName;
-          pre.method = this.value[i].method;
-          pre.note = this.value[i].note;
-          pre.spec = this.value[i].spec;
-          pre.type = this.value[i].type;
-          pre.unit = this.value[i].unit;
-          pre.Qty =
-            Math.floor(
-              this.value[i].Qty / listDrugPre.response.result[0].HisPackageRatio
-            ) * listDrugPre.response.result[0].HisPackageRatio;
-          this.value[i].Qty =
-            this.value[i].Qty % listDrugPre.response.result[0].HisPackageRatio;
-
-          codeArrPush.push(pre);
-        }
-      }
-
-      let listDrugLCA: any = await this.http.post('listDrugLCA', formData);
-
-      if (listDrugLCA.response.rowCount == 1) {
-        if (
-          Math.floor(
-            this.value[i].Qty / listDrugLCA.response.result[0].packageRatio
-          ) *
-            listDrugLCA.response.result[0].packageRatio >
-          0
-        ) {
-          var lca: any = {};
-          lca.code = listDrugLCA.response.result[0].drugCode;
-          lca.Qty =
-            Math.floor(
-              this.value[i].Qty / listDrugLCA.response.result[0].packageRatio
-            ) * listDrugLCA.response.result[0].packageRatio;
-          // this.numArr = this.numArr + 1;
-          // a.itemNo = this.this.valueue.length + 1;
-          lca.Name = this.value[i].Name;
-          lca.alias = this.value[i].alias;
-          lca.firmName = this.value[i].firmName;
-          lca.method = this.value[i].method;
-          lca.note = this.value[i].note;
-          lca.spec = this.value[i].spec;
-          lca.type = this.value[i].type;
-          lca.unit = this.value[i].unit;
-          // console.log(this.numArr);
-          codeArrPush.push(lca);
-
-          this.value[i].Qty =
-            this.value[i].Qty % listDrugLCA.response.result[0].packageRatio;
-          // if (
-          //   this.value[i].Qty % listDrugLCA.response.result[0].packageRatio >
-          //   0
-          // ) {
-          //   this.value[i].Qty =
-          //     this.value[i].Qty % listDrugLCA.response.result[0].packageRatio;
+          if (
+            this.value[i].Qty >=
+            Number(listDrugSE.response.result[0].HisPackageRatio)
+          ) {
+            se.code = listDrugSE.response.result[0].drugCode;
+            se.Name = this.value[i].Name;
+            se.alias = this.value[i].alias;
+            se.firmName = this.value[i].firmName;
+            se.method = this.value[i].method;
+            se.note = this.value[i].note;
+            se.spec = this.value[i].spec;
+            se.type = this.value[i].type;
+            se.unit = this.value[i].unit;
+            se.Qty =
+              Math.floor(
+                this.value[i].Qty /
+                  listDrugSE.response.result[0].HisPackageRatio
+              ) * listDrugSE.response.result[0].HisPackageRatio;
+            this.value[i].Qty =
+              this.value[i].Qty % listDrugSE.response.result[0].HisPackageRatio;
+            codeArrPush.push(se);
+          }
           // }
         }
-      }
 
-      if (this.value[i].Qty > 0) {
-        let getData: any = await this.http.post('checkJV', formData);
+        formData.append('prepack', this.value[i].code.trim() + '-');
+        let listDrugPre: any = await this.http.post(
+          'PrepackListStock',
+          formData
+        );
+        let seCheckOutOfStock: any = await this.http.post(
+          'seCheckOutOfStock',
+          formData
+        );
 
-        if (getData.response.rowCount == 1) {
-          let getData2: any = await this.http.post('jvmExpire', formData);
+        // let numPack = listDrugPre.response.result[0].HisPackageRatio;
 
-          let dateC = null;
-          let date = new Date();
-          date.setFullYear(date.getFullYear() + 1);
-          // let dateC = moment(date).format('DD/MM/YYYY');
-          if (getData2.response.result[0].ExpiredDate) {
-            dateC = moment(getData2.response.result[0].ExpiredDate).format(
-              'DD/MM/YYYY'
-            );
-          } else {
-            dateC = moment(date).format('DD/MM/YYYY');
+        if (listDrugPre.response.rowCount > 0) {
+          var pre: any = {};
+
+          if (
+            this.value[i].Qty >=
+              Number(listDrugPre.response.result[0].HisPackageRatio) &&
+            this.value[i].Qty <=
+              Number(seCheckOutOfStock.response.result[0].Quantity)
+          ) {
+            pre.code = listDrugPre.response.result[0].drugCode;
+            pre.Name = this.value[i].Name;
+            pre.alias = this.value[i].alias;
+            pre.firmName = this.value[i].firmName;
+            pre.method = this.value[i].method;
+            pre.note = this.value[i].note;
+            pre.spec = this.value[i].spec;
+            pre.type = this.value[i].type;
+            pre.unit = this.value[i].unit;
+            pre.Qty =
+              Math.floor(
+                this.value[i].Qty /
+                  listDrugPre.response.result[0].HisPackageRatio
+              ) * listDrugPre.response.result[0].HisPackageRatio;
+            this.value[i].Qty =
+              this.value[i].Qty %
+              listDrugPre.response.result[0].HisPackageRatio;
+
+            codeArrPush.push(pre);
           }
-
-          j++;
-
-          let data =
-            this.inputGroup.value.name +
-            '|' +
-            this.inputGroup.value.hn +
-            j +
-            '|' +
-            numJV +
-            '|' +
-            dateBirthConvert +
-            ' 0:00:00|OPD|||' +
-            this.inputGroup.value.age +
-            '||' +
-            numDontKnow +
-            '|I|' +
-            this.value[i].Qty +
-            '|' +
-            this.value[i].code +
-            '|' +
-            this.value[i].Name +
-            '|' +
-            dateA +
-            '|' +
-            dateA +
-            '|' +
-            '00:0' +
-            j +
-            '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
-            numJV +
-            this.value[i].code +
-            '|||' +
-            dateB +
-            '|' +
-            dateC +
-            '|' +
-            this.inputGroup.value.hn +
-            '||';
-
-          codeArr.push(data);
         }
 
-        codeArrPush.push(this.value[i]);
+        let listDrugLCA: any = await this.http.post('listDrugLCA', formData);
+
+        if (listDrugLCA.response.rowCount == 1) {
+          if (
+            Math.floor(
+              this.value[i].Qty / listDrugLCA.response.result[0].packageRatio
+            ) *
+              listDrugLCA.response.result[0].packageRatio >
+            0
+          ) {
+            var lca: any = {};
+            lca.code = listDrugLCA.response.result[0].drugCode;
+            lca.Qty =
+              Math.floor(
+                this.value[i].Qty / listDrugLCA.response.result[0].packageRatio
+              ) * listDrugLCA.response.result[0].packageRatio;
+            // this.numArr = this.numArr + 1;
+            // a.itemNo = this.this.valueue.length + 1;
+            lca.Name = this.value[i].Name;
+            lca.alias = this.value[i].alias;
+            lca.firmName = this.value[i].firmName;
+            lca.method = this.value[i].method;
+            lca.note = this.value[i].note;
+            lca.spec = this.value[i].spec;
+            lca.type = this.value[i].type;
+            lca.unit = this.value[i].unit;
+            // console.log(this.numArr);
+            codeArrPush.push(lca);
+
+            this.value[i].Qty =
+              this.value[i].Qty % listDrugLCA.response.result[0].packageRatio;
+            // if (
+            //   this.value[i].Qty % listDrugLCA.response.result[0].packageRatio >
+            //   0
+            // ) {
+            //   this.value[i].Qty =
+            //     this.value[i].Qty % listDrugLCA.response.result[0].packageRatio;
+            // }
+          }
+        }
+
+        if (this.value[i].Qty > 0) {
+          let getData: any = await this.http.post('checkJV', formData);
+
+          if (getData.response.rowCount == 1) {
+            let getData2: any = await this.http.post('jvmExpire', formData);
+
+            let dateC = null;
+            let date = new Date();
+            date.setFullYear(date.getFullYear() + 1);
+
+            // if (getData2.response.result[0].ExpiredDate) {
+            //   dateC = moment(getData2.response.result[0].ExpiredDate)
+            //     .add(543, 'year')
+            //     .format('DD/MM/YYYY');
+            // } else {
+            //   dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
+            // }
+
+            if (getData2.response.result[0].ExpiredDate) {
+              dateC = moment(getData2.response.result[0].ExpiredDate).format(
+                'DD/MM/YYYY'
+              );
+            } else {
+              dateC = moment(date).format('DD/MM/YYYY');
+            }
+
+            if (this.value[i].Qty > 400) {
+              do {
+                j++;
+                let data =
+                  this.inputGroup.value.name +
+                  '|' +
+                  this.inputGroup.value.hn +
+                  j +
+                  '|' +
+                  numJV +
+                  '|' +
+                  dateBirthConvert +
+                  ' 0:00:00|OPD|||' +
+                  this.inputGroup.value.age +
+                  '||' +
+                  numDontKnow +
+                  '|I|' +
+                  400 +
+                  '|' +
+                  this.value[i].code +
+                  '|' +
+                  this.value[i].Name +
+                  '|' +
+                  dateA +
+                  '|' +
+                  dateA +
+                  '|' +
+                  '00:0' +
+                  j +
+                  '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
+                  numJV +
+                  this.value[i].code +
+                  '|||' +
+                  dateB +
+                  '|' +
+                  dateC +
+                  '|' +
+                  this.inputGroup.value.hn +
+                  '||';
+
+                codeArr.push(data);
+                this.value[i].Qty = this.value[i].Qty - 400;
+              } while (this.value[i].Qty > 400);
+            }
+
+            j++;
+
+            let data =
+              this.inputGroup.value.name +
+              '|' +
+              this.inputGroup.value.hn +
+              j +
+              '|' +
+              numJV +
+              '|' +
+              dateBirthConvert +
+              ' 0:00:00|OPD|||' +
+              this.inputGroup.value.age +
+              '||' +
+              numDontKnow +
+              '|I|' +
+              this.value[i].Qty +
+              '|' +
+              this.value[i].code +
+              '|' +
+              this.value[i].Name +
+              '|' +
+              dateA +
+              '|' +
+              dateA +
+              '|' +
+              '00:0' +
+              j +
+              '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
+              numJV +
+              this.value[i].code +
+              '|||' +
+              dateB +
+              '|' +
+              dateC +
+              '|' +
+              this.inputGroup.value.hn +
+              '||';
+
+            codeArr.push(data);
+          }
+
+          codeArrPush.push(this.value[i]);
+        }
       }
     }
 
@@ -653,5 +717,7 @@ export class DrugManualComponent implements OnInit {
     this.selected = '';
     this.clickHn = true;
     this.isDisabled = true;
+    this.checkedDih = true;
+    this.checkedJvm = true;
   }
 }
