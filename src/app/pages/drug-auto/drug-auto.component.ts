@@ -113,12 +113,23 @@ export class DrugAutoComponent implements OnInit {
   public brithdayT: string = '';
   public hnT: string = '';
   public sexT: string = '';
+  public dataQ: any = null;
 
   public async getDataPatien(hn: any, name: any) {
     let dataForm = new FormData();
-    dataForm.append('hn', hn);
+    dataForm.append('hn', hn.trim());
     let getData: any = await this.http.post('listDataPatien', dataForm);
+    let getData2: any = await this.http.post('DataQ', dataForm);
 
+    if (getData2.connect) {
+      if (getData2.response.rowCount > 0) {
+        this.dataQ = getData2.response.result[0].QN;
+      } else {
+        this.dataQ = '';
+      }
+    } else {
+      Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้!', '', 'error');
+    }
     if (getData.connect) {
       if (getData.response.rowCount > 0) {
         this.dataDrugPatien = getData.response.result;
@@ -455,7 +466,9 @@ export class DrugAutoComponent implements OnInit {
                   dateC +
                   '|' +
                   this.hnT +
-                  '||';
+                  '|' +
+                  this.dataQ +
+                  '|';
 
                 codeArr.push(data);
                 this.value[i].Qty = this.value[i].Qty - 400;
@@ -499,8 +512,9 @@ export class DrugAutoComponent implements OnInit {
               dateC +
               '|' +
               this.hnT +
-              '||';
-
+              '|' +
+              this.dataQ +
+              '|';
             codeArr.push(data);
           }
 
@@ -508,6 +522,7 @@ export class DrugAutoComponent implements OnInit {
         }
       }
     }
+
     for (let index = 0; index < codeArrPush.length; index++) {
       codeArrPush[index].itemNo = index + 1;
       let value = {
@@ -650,6 +665,7 @@ export class DrugAutoComponent implements OnInit {
     this.checkedJvm = true;
     this.selection.clear();
     this.selectedRowIndex = 1;
+    this.dataQ = null;
     // this.birthDate = null;
     this.getData();
   }
