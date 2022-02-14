@@ -775,6 +775,7 @@ export class DrugManualComponent implements OnInit {
     let value2 = [];
     let dih = 1;
     let jvm = 1;
+    let numRandom = '9900' + Math.floor(Math.random() * 1000000000) + '_';
     for (let i = 0; i < op.length; i++) {
       for (let j = 0; j < op[i].length; j++) {
         let value = {
@@ -782,11 +783,7 @@ export class DrugManualComponent implements OnInit {
         };
         value2.push(value);
       }
-      let numRandom =
-        '99' +
-        Math.floor(Math.random() * 100000000) +
-        '_' +
-        Math.floor(Math.random() * 100);
+
       let jsonDrug = {
         patient: {
           patID: this.inputGroup.value.hn,
@@ -814,7 +811,7 @@ export class DrugManualComponent implements OnInit {
         },
         prescriptions: {
           prescription: {
-            orderNo: numRandom,
+            orderNo: numRandom + (i + 1),
             ordertype: 'M',
             pharmacy: 'OPD',
             windowNo: '',
@@ -877,9 +874,9 @@ export class DrugManualComponent implements OnInit {
     // } else {
     //   Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
     // }
-    // let win: any = window;
-    // win.$('.modal-backdrop').remove();
-    // win.$('#myModal').modal('hide');
+    let win: any = window;
+    win.$('.modal-backdrop').remove();
+    win.$('#myModal').modal('hide');
 
     // for (let index = 0; index < op.length; index++) {
 
