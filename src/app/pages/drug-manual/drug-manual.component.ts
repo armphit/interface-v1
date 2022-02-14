@@ -313,8 +313,8 @@ export class DrugManualComponent implements OnInit {
     const momentDate = new Date();
     let datePayment = moment(momentDate).format('YYYY-MM-DD');
     let dateA = moment(momentDate).format('YYMMDD');
-    // let dateB = moment(momentDate).add(543, 'year').format('DD/MM/YYYY');
-    let dateB = moment(momentDate).format('DD/MM/YYYY');
+    let dateB = moment(momentDate).add(543, 'year').format('DD/MM/YYYY');
+    // let dateB = moment(momentDate).format('DD/MM/YYYY');
 
     let numJV = '6400' + Math.floor(Math.random() * 1000000);
     let getAge = new Date().getFullYear() - 2020;
@@ -328,10 +328,13 @@ export class DrugManualComponent implements OnInit {
     let j = 0;
     let p = 0;
 
-    let getData2: any = await this.http.post('DataQ', this.inputGroup.value.hn);
+    let formData = new FormData();
+    formData.append('hn', this.inputGroup.value.hn.trim());
+    let getData2: any = await this.http.post('DataQ', formData);
     let dataQ = null;
     let numBox: number = 0;
     let arrSE = new Array();
+
     if (getData2.connect) {
       if (getData2.response.rowCount > 0) {
         dataQ = getData2.response.result[0].QN;
@@ -341,6 +344,7 @@ export class DrugManualComponent implements OnInit {
     } else {
       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้!', '', 'error');
     }
+
     for (let i = 0; i < this.value.length; i++) {
       let formData = new FormData();
       formData.append('code', this.value[i].code.trim());
@@ -628,21 +632,21 @@ export class DrugManualComponent implements OnInit {
             let date = new Date();
             date.setFullYear(date.getFullYear() + 1);
 
-            // if (getData2.response.result[0].ExpiredDate) {
-            //   dateC = moment(getData2.response.result[0].ExpiredDate)
-            //     .add(543, 'year')
-            //     .format('DD/MM/YYYY');
-            // } else {
-            //   dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
-            // }
-
             if (getData2.response.result[0].ExpiredDate) {
-              dateC = moment(getData2.response.result[0].ExpiredDate).format(
-                'DD/MM/YYYY'
-              );
+              dateC = moment(getData2.response.result[0].ExpiredDate)
+                .add(543, 'year')
+                .format('DD/MM/YYYY');
             } else {
-              dateC = moment(date).format('DD/MM/YYYY');
+              dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
             }
+
+            // if (getData2.response.result[0].ExpiredDate) {
+            //   dateC = moment(getData2.response.result[0].ExpiredDate).format(
+            //     'DD/MM/YYYY'
+            //   );
+            // } else {
+            //   dateC = moment(date).format('DD/MM/YYYY');
+            // }
 
             if (this.value[i].Qty > 400) {
               do {
@@ -739,11 +743,17 @@ export class DrugManualComponent implements OnInit {
         }
       }
     }
+
     let DataJV: any = null;
     // let DataJV2: any = null;
     // let DataFinal: any = [];
 
-    if (codeArr.join('\r\n') != '') {
+    if (codeArr) {
+      for (let i = 0; i < codeArr.length; i++) {
+        codeArr[i] = codeArr[i] + '(' + (i + 1) + '/' + codeArr.length + ')';
+      }
+
+      console.log(codeArr);
       DataJV = codeArr.join('\r\n');
     }
     let op = [];
@@ -825,51 +835,51 @@ export class DrugManualComponent implements OnInit {
       let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
       // console.log(xmlDrug);
 
-      if (this.checkedDih == true) {
-        let dataXml = { data: xmlDrug };
-        getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-      }
+      // if (this.checkedDih == true) {
+      //   let dataXml = { data: xmlDrug };
+      //   getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+      // }
 
-      if (getDataDIH.connect == true) {
-        if (getDataDIH.response == 1) {
-          dih = 1;
-          // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-        } else {
-          dih = 2;
-          // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-        }
-      } else {
-        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-      }
+      // if (getDataDIH.connect == true) {
+      //   if (getDataDIH.response == 1) {
+      //     dih = 1;
+      //     // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+      //   } else {
+      //     dih = 2;
+      //     // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+      //   }
+      // } else {
+      //   Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+      // }
     }
-    if (this.checkedJvm == true) {
-      if (DataJV) {
-        let dataJv = { data: DataJV };
-        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-        if (getDataJV.connect == true) {
-          if (getDataJV.response == 1) {
-            jvm = 1;
-          } else if (getDataJV.response == 0) {
-            jvm = 2;
-          }
-        } else {
-          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-        }
-      }
-    }
+    // if (this.checkedJvm == true) {
+    //   if (DataJV) {
+    //     let dataJv = { data: DataJV };
+    //     getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+    //     if (getDataJV.connect == true) {
+    //       if (getDataJV.response == 1) {
+    //         jvm = 1;
+    //       } else if (getDataJV.response == 0) {
+    //         jvm = 2;
+    //       }
+    //     } else {
+    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+    //     }
+    //   }
+    // }
 
-    if (
-      (dih == 1 && jvm == 2) ||
-      (dih == 2 && jvm == 1) ||
-      (dih == 1 && jvm == 1)
-    ) {
-      Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    } else {
-      Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    }
-    let win: any = window;
-    win.$('.modal-backdrop').remove();
-    win.$('#myModal').modal('hide');
+    // if (
+    //   (dih == 1 && jvm == 2) ||
+    //   (dih == 2 && jvm == 1) ||
+    //   (dih == 1 && jvm == 1)
+    // ) {
+    //   Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+    // } else {
+    //   Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+    // }
+    // let win: any = window;
+    // win.$('.modal-backdrop').remove();
+    // win.$('#myModal').modal('hide');
 
     // for (let index = 0; index < op.length; index++) {
 
