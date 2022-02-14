@@ -748,12 +748,11 @@ export class DrugManualComponent implements OnInit {
     // let DataJV2: any = null;
     // let DataFinal: any = [];
 
-    if (codeArr) {
+    if (codeArr.length > 0) {
       for (let i = 0; i < codeArr.length; i++) {
         codeArr[i] = codeArr[i] + '(' + (i + 1) + '/' + codeArr.length + ')';
       }
 
-      console.log(codeArr);
       DataJV = codeArr.join('\r\n');
     }
     let op = [];
@@ -832,48 +831,47 @@ export class DrugManualComponent implements OnInit {
       let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
       // console.log(xmlDrug);
 
-      // if (this.checkedDih == true) {
-      //   let dataXml = { data: xmlDrug };
-      //   getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-      // }
-
-      // if (getDataDIH.connect == true) {
-      //   if (getDataDIH.response == 1) {
-      //     dih = 1;
-      //     // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-      //   } else {
-      //     dih = 2;
-      //     // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-      //   }
-      // } else {
-      //   Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-      // }
+      if (this.checkedDih == true) {
+        let dataXml = { data: xmlDrug };
+        getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+        if (getDataDIH.connect == true) {
+          if (getDataDIH.response == 1) {
+            dih = 1;
+            // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+          } else {
+            dih = 2;
+            // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      }
     }
-    // if (this.checkedJvm == true) {
-    //   if (DataJV) {
-    //     let dataJv = { data: DataJV };
-    //     getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    //     if (getDataJV.connect == true) {
-    //       if (getDataJV.response == 1) {
-    //         jvm = 1;
-    //       } else if (getDataJV.response == 0) {
-    //         jvm = 2;
-    //       }
-    //     } else {
-    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //     }
-    //   }
-    // }
+    if (this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            jvm = 1;
+          } else if (getDataJV.response == 0) {
+            jvm = 2;
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      }
+    }
 
-    // if (
-    //   (dih == 1 && jvm == 2) ||
-    //   (dih == 2 && jvm == 1) ||
-    //   (dih == 1 && jvm == 1)
-    // ) {
-    //   Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    // } else {
-    //   Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    // }
+    if (
+      (dih == 1 && jvm == 2) ||
+      (dih == 2 && jvm == 1) ||
+      (dih == 1 && jvm == 1)
+    ) {
+      Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+    } else {
+      Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+    }
     let win: any = window;
     win.$('.modal-backdrop').remove();
     win.$('#myModal').modal('hide');

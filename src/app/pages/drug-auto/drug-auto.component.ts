@@ -257,8 +257,8 @@ export class DrugAutoComponent implements OnInit {
     const momentDate = new Date();
     let datePayment = moment(momentDate).format('YYYY-MM-DD');
     let dateA = moment(momentDate).format('YYMMDD');
-    // let dateB = moment(momentDate).add(543, 'year').format('DD/MM/YYYY');
-    let dateB = moment(momentDate).format('DD/MM/YYYY');
+    let dateB = moment(momentDate).add(543, 'year').format('DD/MM/YYYY');
+    // let dateB = moment(momentDate).format('DD/MM/YYYY');
     // let numRandom =
     //   '99' +
     //   Math.floor(Math.random() * 100000000) +
@@ -519,21 +519,21 @@ export class DrugAutoComponent implements OnInit {
             let date = new Date();
             date.setFullYear(date.getFullYear() + 1);
 
-            // if (getData2.response.result[0].ExpiredDate) {
-            //   dateC = moment(getData2.response.result[0].ExpiredDate)
-            //     .add(543, 'year')
-            //     .format('DD/MM/YYYY');
-            // } else {
-            //   dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
-            // }
-
             if (getData2.response.result[0].ExpiredDate) {
-              dateC = moment(getData2.response.result[0].ExpiredDate).format(
-                'DD/MM/YYYY'
-              );
+              dateC = moment(getData2.response.result[0].ExpiredDate)
+                .add(543, 'year')
+                .format('DD/MM/YYYY');
             } else {
-              dateC = moment(date).format('DD/MM/YYYY');
+              dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
             }
+
+            // if (getData2.response.result[0].ExpiredDate) {
+            //   dateC = moment(getData2.response.result[0].ExpiredDate).format(
+            //     'DD/MM/YYYY'
+            //   );
+            // } else {
+            //   dateC = moment(date).format('DD/MM/YYYY');
+            // }
 
             if (this.value[i].Qty > 400) {
               do {
@@ -630,6 +630,15 @@ export class DrugAutoComponent implements OnInit {
       }
     }
 
+    let DataJV: any = null;
+    if (codeArr.length > 0) {
+      for (let i = 0; i < codeArr.length; i++) {
+        codeArr[i] = codeArr[i] + '(' + (i + 1) + '/' + codeArr.length + ')';
+      }
+      console.log(codeArr);
+      DataJV = codeArr.join('\r\n');
+    }
+
     let op = [];
     for (let i = 0; i < codeArrSE.length; i++) {
       op.push(codeArrSE[i]);
@@ -637,13 +646,8 @@ export class DrugAutoComponent implements OnInit {
 
     op.push(arrSE.concat(codeArrPush));
 
-    let DataJV: any = null;
     // let DataJV2: any = null;
     // let DataFinal: any = [];
-
-    if (codeArr.join('\r\n') != '') {
-      DataJV = codeArr.join('\r\n');
-    }
 
     let getDataJV: any = null;
     let getDataDIH: any = null;
@@ -663,8 +667,14 @@ export class DrugAutoComponent implements OnInit {
           patID: this.hnT,
           patName:
             this.nameT.length > 30
-              ? this.nameT.substring(0, 30) + '...'
-              : this.nameT,
+              ? this.nameT.substring(0, 30) +
+                '...' +
+                '(' +
+                (i + 1) +
+                '/' +
+                op.length +
+                ')'
+              : this.nameT + '(' + (i + 1) + '/' + op.length + ')',
           gender: this.dataDrugPatien[0].sex,
           birthday: this.dataDrugPatien[0].patientdob,
           age: age,
@@ -674,7 +684,7 @@ export class DrugAutoComponent implements OnInit {
         },
         prescriptions: {
           prescription: {
-            orderNo: numRandom,
+            orderNo: numRandom + (i + 1),
             ordertype: 'M',
             pharmacy: 'OPD',
             windowNo: '',
@@ -697,18 +707,17 @@ export class DrugAutoComponent implements OnInit {
       if (this.checkedDih == true) {
         let dataXml = { data: xmlDrug };
         getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-      }
-
-      if (getDataDIH.connect == true) {
-        if (getDataDIH.response == 1) {
-          dih = 1;
-          // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+        if (getDataDIH.connect == true) {
+          if (getDataDIH.response == 1) {
+            dih = 1;
+            // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+          } else {
+            dih = 2;
+            // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
         } else {
-          dih = 2;
-          // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
         }
-      } else {
-        Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
       }
     }
 
