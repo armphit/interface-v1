@@ -131,6 +131,7 @@ export class DrugManualComponent implements OnInit {
         age: [splitted[5], Validators.required],
       });
       this.selectedSex = splitted[6];
+      console.log(splitted);
     }
     this.birthDate = splitted[4] + '-' + splitted[3] + '-' + splitted[2];
     this.clickHn = false;
@@ -640,105 +641,55 @@ export class DrugManualComponent implements OnInit {
               dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
             }
 
-            // if (getData2.response.result[0].ExpiredDate) {
-            //   dateC = moment(getData2.response.result[0].ExpiredDate).format(
-            //     'DD/MM/YYYY'
-            //   );
-            // } else {
-            //   dateC = moment(date).format('DD/MM/YYYY');
-            // }
+            let amount: any;
+            let qty = this.value[i].Qty;
+            do {
+              j++;
+              amount = qty > 400 ? 400 : qty;
 
-            if (this.value[i].Qty > 400) {
-              do {
-                j++;
-                let data =
-                  this.inputGroup.value.name +
-                  '|' +
-                  this.inputGroup.value.hn +
-                  j +
-                  '|' +
-                  numJV +
-                  '|' +
-                  dateBirthConvert +
-                  ' 0:00:00|OPD|||' +
-                  this.inputGroup.value.age +
-                  '||' +
-                  numDontKnow +
-                  '|I|' +
-                  400 +
-                  '|' +
-                  this.value[i].code +
-                  '|' +
-                  this.value[i].Name +
-                  '|' +
-                  dateA +
-                  '|' +
-                  dateA +
-                  '|' +
-                  '00:0' +
-                  j +
-                  '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
-                  numJV +
-                  this.value[i].code +
-                  '|||' +
-                  dateB +
-                  '|' +
-                  dateC +
-                  '|' +
-                  this.inputGroup.value.hn +
-                  '|' +
-                  dataQ +
-                  '|';
+              let data =
+                this.inputGroup.value.name +
+                '|' +
+                this.inputGroup.value.hn +
+                j +
+                '|' +
+                numJV +
+                '|' +
+                dateBirthConvert +
+                ' 0:00:00|OPD|||' +
+                this.inputGroup.value.age +
+                '||' +
+                numDontKnow +
+                '|I|' +
+                amount +
+                '|' +
+                this.value[i].code +
+                '|' +
+                this.value[i].Name +
+                '|' +
+                dateA +
+                '|' +
+                dateA +
+                '|' +
+                '00:0' +
+                j +
+                '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
+                numJV +
+                this.value[i].code +
+                '|||' +
+                dateB +
+                '|' +
+                dateC +
+                '|' +
+                this.inputGroup.value.hn +
+                '|' +
+                dataQ +
+                '|';
 
-                codeArr.push(data);
-                this.value[i].Qty = this.value[i].Qty - 400;
-              } while (this.value[i].Qty > 400);
-            }
-
-            j++;
-
-            let data =
-              this.inputGroup.value.name +
-              '|' +
-              this.inputGroup.value.hn +
-              j +
-              '|' +
-              numJV +
-              '|' +
-              dateBirthConvert +
-              ' 0:00:00|OPD|||' +
-              this.inputGroup.value.age +
-              '||' +
-              numDontKnow +
-              '|I|' +
-              this.value[i].Qty +
-              '|' +
-              this.value[i].code +
-              '|' +
-              this.value[i].Name +
-              '|' +
-              dateA +
-              '|' +
-              dateA +
-              '|' +
-              '00:0' +
-              j +
-              '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
-              numJV +
-              this.value[i].code +
-              '|||' +
-              dateB +
-              '|' +
-              dateC +
-              '|' +
-              this.inputGroup.value.hn +
-              '|' +
-              dataQ +
-              '|';
-
-            codeArr.push(data);
+              codeArr.push(data);
+              qty = qty - amount;
+            } while (qty > 0);
           }
-
           codeArrPush.push(this.value[i]);
         }
       }
@@ -829,7 +780,6 @@ export class DrugManualComponent implements OnInit {
       };
       value2 = [];
       let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
-      // console.log(xmlDrug);
 
       if (this.checkedDih == true) {
         let dataXml = { data: xmlDrug };
@@ -875,136 +825,6 @@ export class DrugManualComponent implements OnInit {
     let win: any = window;
     win.$('.modal-backdrop').remove();
     win.$('#myModal').modal('hide');
-
-    // for (let index = 0; index < op.length; index++) {
-
-    //   let value = {
-    //     drug: op[index],
-    //   };
-    //   this.value2.push(value);
-    // }
-
-    // patName:
-    // this.inputGroup.value.name.length > 30
-    //   ? this.inputGroup.value.name.substring(0, 30) + '...'
-    //   : this.inputGroup.value.name,
-
-    // let a = 'พระครู ศีลคุณวิสุทธิ์ (ชูชีพ) กลิ่นจันทร์';
-    // console.log(a.length);
-
-    // let jsonDrug = {
-    //   patient: {
-    //     patID: this.inputGroup.value.hn,
-    //     patName:
-    //       this.inputGroup.value.name.length > 40
-    //         ? this.inputGroup.value.name.substring(0, 37) + '...'
-    //         : this.inputGroup.value.name,
-    //     gender: this.selectedSex,
-    //     birthday: this.birthDate,
-    //     age: this.inputGroup.value.age,
-    //     identity: '',
-    //     insuranceNo: '',
-    //     chargeType: '',
-    //   },
-    //   prescriptions: {
-    //     prescription: {
-    //       orderNo: numRandom,
-    //       ordertype: 'M',
-    //       pharmacy: 'OPD',
-    //       windowNo: '',
-    //       paymentIP: '',
-    //       paymentDT: datePayment,
-    //       outpNo: '',
-    //       visitNo: '',
-    //       deptCode: '',
-    //       deptName: '',
-    //       doctCode: '',
-    //       doctName: '',
-    //       diagnosis: '',
-    //       drugs: this.value2,
-    //     },
-    //   },
-    // };
-
-    // let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
-
-    // let getDataJV: any = null;
-    // let getDataDIH: any = null;
-
-    // if (this.checkedDih == true && this.checkedJvm == true) {
-    //   if (DataJV) {
-    //     let dataJv = { data: DataJV };
-    //     getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    //   }
-
-    //   let dataXml = { data: xmlDrug };
-    //   getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-
-    //   if (getDataJV) {
-    //     if (getDataJV.connect == true) {
-    //       if (getDataJV.response == 1) {
-    //         Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    //         let win: any = window;
-    //         win.$('.modal-backdrop').remove();
-    //         win.$('#myModal').modal('hide');
-    //       } else if (getDataJV.response == 0) {
-    //         Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    //       }
-    //     } else {
-    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //     }
-    //   } else {
-    //     if (getDataDIH.connect == true) {
-    //       if (getDataDIH.response == 1) {
-    //         Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    //         let win: any = window;
-    //         win.$('.modal-backdrop').remove();
-    //         win.$('#myModal').modal('hide');
-    //       } else {
-    //         Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    //       }
-    //     } else {
-    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //     }
-    //   }
-    // } else if (this.checkedDih == true && this.checkedJvm == false) {
-    //   let dataXml = { data: xmlDrug };
-    //   getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-
-    //   if (getDataDIH.connect == true) {
-    //     if (getDataDIH.response == 1) {
-    //       Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    //       let win: any = window;
-    //       win.$('.modal-backdrop').remove();
-    //       win.$('#myModal').modal('hide');
-    //     } else {
-    //       Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    //     }
-    //   } else {
-    //     Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //   }
-    // } else if (this.checkedDih == false && this.checkedJvm == true) {
-    //   if (DataJV) {
-    //     let dataJv = { data: DataJV };
-    //     getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    //     if (getDataJV.connect == true) {
-    //       if (getDataJV.response == 1) {
-    //         Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    //         let win: any = window;
-    //         win.$('.modal-backdrop').remove();
-    //         win.$('#myModal').modal('hide');
-    //       } else if (getDataJV.response == 0) {
-    //         Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    //       }
-    //     } else {
-    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //     }
-    //   } else {
-    //     Swal.fire('ข้อมูลไม่ถูกต้อง', '', 'error');
-    //     let win: any = window;
-    //     win.$('#myModal').modal('hide');
-    //   }
-    // }
 
     this.value = [];
     this.inputGroup.reset();
