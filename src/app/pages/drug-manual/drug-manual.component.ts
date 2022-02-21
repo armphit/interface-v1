@@ -331,12 +331,11 @@ export class DrugManualComponent implements OnInit {
 
         if (listDrugOPD.response.rowCount > 0) {
           if (
-            this.value[i].Qty >=
-              Number(listDrugOPD.response.result[0].HisPackageRatio) &&
             listDrugOPD.response.result[0].deviceCode.includes('Xmed1') &&
-            listDrugOPD.response.result[0].isPrepack == 'N'
+            listDrugOPD.response.result[0].isPrepack == 'N' &&
+            this.value[i].Qty >=
+              Number(listDrugOPD.response.result[0].HisPackageRatio)
           ) {
-            console.log(listDrugOPD.response.result[0]);
             var qtyBox: number =
               this.value[i].Qty /
               listDrugOPD.response.result[0].HisPackageRatio;
@@ -425,14 +424,13 @@ export class DrugManualComponent implements OnInit {
           var pre: any = {};
 
           if (
+            listDrugOPD.response.result[0].deviceCode.includes('Xmed1') &&
+            listDrugOPD.response.result[0].isPrepack == 'Y' &&
             this.value[i].Qty >=
               Number(listDrugOPD.response.result[0].HisPackageRatio) &&
             this.value[i].Qty <=
-              Number(seCheckOutOfStock.response.result[0].Quantity) &&
-            listDrugOPD.response.result[0].deviceCode.includes('Xmed1') &&
-            listDrugOPD.response.result[0].isPrepack == 'Y'
+              Number(seCheckOutOfStock.response.result[0].Quantity)
           ) {
-            console.log(listDrugOPD.response.result[0]);
             var qtyBox: number =
               this.value[i].Qty /
               listDrugOPD.response.result[0].HisPackageRatio;
@@ -504,12 +502,11 @@ export class DrugManualComponent implements OnInit {
           // let listDrugLCA: any = await this.http.post('listDrugLCA', formData);
           listDrugOPD.response.result.forEach((listDrugOPD: any) => {
             if (
+              listDrugOPD.deviceCode.includes('LCA') &&
               Math.floor(this.value[i].Qty / listDrugOPD.HisPackageRatio) *
                 listDrugOPD.HisPackageRatio >
-                0 &&
-              listDrugOPD.deviceCode.includes('LCA')
+                0
             ) {
-              console.log(listDrugOPD.response.result[0]);
               var lca: any = {};
               lca.code = listDrugOPD.drugCode;
               lca.Qty =
@@ -532,82 +529,84 @@ export class DrugManualComponent implements OnInit {
             }
           });
         }
+        let numMax: any;
         if (this.value[i].Qty > 0) {
           // let getData: any = await this.http.post('checkJV', formData);
+          if (listDrugOPD.response.rowCount > 0) {
+            if (listDrugOPD.response.result[0].deviceCode.includes('JV')) {
+              let getData2: any = await this.http.post('jvmExpire', formData);
 
-          if (listDrugOPD.response.result[0].deviceCode.includes('JV')) {
-            let getData2: any = await this.http.post('jvmExpire', formData);
+              let dateC = null;
+              let date = new Date();
+              date.setFullYear(date.getFullYear() + 1);
 
-            let dateC = null;
-            let date = new Date();
-            date.setFullYear(date.getFullYear() + 1);
+              if (getData2.response.rowCount > 0) {
+                if (getData2.response.result[0].ExpiredDate) {
+                  dateC = moment(getData2.response.result[0].ExpiredDate)
+                    .add(543, 'year')
+                    .format('DD/MM/YYYY');
+                } else {
+                  dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
+                }
 
-            if (getData2.response.result[0].ExpiredDate) {
-              dateC = moment(getData2.response.result[0].ExpiredDate)
-                .add(543, 'year')
-                .format('DD/MM/YYYY');
-            } else {
-              dateC = moment(date).add(543, 'year').format('DD/MM/YYYY');
+                if (Number(getData2.response.result[0].QuantityMaximum)) {
+                  numMax = Number(getData2.response.result[0].QuantityMaximum);
+                } else {
+                  numMax = this.value[i].Qty;
+                }
+              }
+
+              let amount: any;
+              let qty = this.value[i].Qty;
+              do {
+                j++;
+                amount = qty > 400 ? 400 : qty;
+
+                let data =
+                  this.inputGroup.value.name +
+                  '|' +
+                  this.inputGroup.value.hn +
+                  j +
+                  '|' +
+                  numJV +
+                  '|' +
+                  dateBirthConvert +
+                  ' 0:00:00|OPD|||' +
+                  this.inputGroup.value.age +
+                  '||' +
+                  numDontKnow +
+                  '|I|' +
+                  amount +
+                  '|' +
+                  this.value[i].code +
+                  '|' +
+                  this.value[i].Name +
+                  '|' +
+                  dateA +
+                  '|' +
+                  dateA +
+                  '|' +
+                  '00:0' +
+                  j +
+                  '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
+                  numJV +
+                  this.value[i].code +
+                  '|||' +
+                  dateB +
+                  '|' +
+                  dateC +
+                  '|' +
+                  this.inputGroup.value.hn +
+                  '|' +
+                  dataQ +
+                  '|';
+
+                codeArr.push(data);
+                qty = qty - amount;
+              } while (qty > 0);
             }
-            let numMax: any;
-            if (Number(getData2.response.result[0].QuantityMaximum)) {
-              numMax = Number(getData2.response.result[0].QuantityMaximum);
-            } else {
-              numMax = this.value[i].Qty;
-            }
-
-            let amount: any;
-            let qty = this.value[i].Qty;
-            do {
-              j++;
-              amount = qty > numMax ? numMax : qty;
-
-              let data =
-                this.inputGroup.value.name +
-                '|' +
-                this.inputGroup.value.hn +
-                j +
-                '|' +
-                numJV +
-                '|' +
-                dateBirthConvert +
-                ' 0:00:00|OPD|||' +
-                this.inputGroup.value.age +
-                '||' +
-                numDontKnow +
-                '|I|' +
-                amount +
-                '|' +
-                this.value[i].code +
-                '|' +
-                this.value[i].Name +
-                '|' +
-                dateA +
-                '|' +
-                dateA +
-                '|' +
-                '00:0' +
-                j +
-                '|||โรงพยาบาลมหาราชนครราชสีมา|||' +
-                numJV +
-                this.value[i].code +
-                '|||' +
-                dateB +
-                '|' +
-                dateC +
-                '|' +
-                this.inputGroup.value.hn +
-                '|' +
-                dataQ +
-                '|';
-
-              codeArr.push(data);
-              qty = qty - amount;
-            } while (qty > 0);
           }
           codeArrPush.push(this.value[i]);
-          console.log(codeArr);
-          console.log(this.value[i].Qty);
         }
       }
     }
@@ -689,52 +688,51 @@ export class DrugManualComponent implements OnInit {
       };
       value2 = [];
       let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
-      console.log(xmlDrug);
 
-      // if (this.checkedDih == true) {
-      //   let dataXml = { data: xmlDrug };
-      //   getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
-      //   if (getDataDIH.connect == true) {
-      //     if (getDataDIH.response == 1) {
-      //       dih = 1;
-      //       // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-      //     } else {
-      //       dih = 2;
-      //       // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-      //     }
-      //   } else {
-      //     Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-      //   }
-      // }
+      if (this.checkedDih == true) {
+        let dataXml = { data: xmlDrug };
+        getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
+        if (getDataDIH.connect == true) {
+          if (getDataDIH.response == 1) {
+            dih = 1;
+            // Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+          } else {
+            dih = 2;
+            // Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      }
     }
-    // if (this.checkedJvm == true) {
-    //   if (DataJV) {
-    //     let dataJv = { data: DataJV };
-    //     getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
-    //     if (getDataJV.connect == true) {
-    //       if (getDataJV.response == 1) {
-    //         jvm = 1;
-    //       } else if (getDataJV.response == 0) {
-    //         jvm = 2;
-    //       }
-    //     } else {
-    //       Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
-    //     }
-    //   }
-    // }
+    if (this.checkedJvm == true) {
+      if (DataJV) {
+        let dataJv = { data: DataJV };
+        getDataJV = await this.http.postNodejs('sendJVMOPD', dataJv);
+        if (getDataJV.connect == true) {
+          if (getDataJV.response == 1) {
+            jvm = 1;
+          } else if (getDataJV.response == 0) {
+            jvm = 2;
+          }
+        } else {
+          Swal.fire('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', '', 'error');
+        }
+      }
+    }
 
-    // if (
-    //   (dih == 1 && jvm == 2) ||
-    //   (dih == 2 && jvm == 1) ||
-    //   (dih == 1 && jvm == 1)
-    // ) {
-    //   Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
-    // } else {
-    //   Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
-    // }
-    // let win: any = window;
-    // win.$('.modal-backdrop').remove();
-    // win.$('#myModal').modal('hide');
+    if (
+      (dih == 1 && jvm == 2) ||
+      (dih == 2 && jvm == 1) ||
+      (dih == 1 && jvm == 1)
+    ) {
+      Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+    } else {
+      Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
+    }
+    let win: any = window;
+    win.$('.modal-backdrop').remove();
+    win.$('#myModal').modal('hide');
 
     this.value = [];
     this.inputGroup.reset();
