@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: '',
     component: NavComponent,
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'drug-auto',
