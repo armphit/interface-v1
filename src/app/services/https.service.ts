@@ -16,7 +16,7 @@ export class HttpsService {
 
   public nodePath: string = 'http://192.168.185.160:3000/';
 
-  public testPath: string = 'http://localhost:3000/';
+  public testPath: string = 'http://localhost:2000/';
   // _url = 'http:// + environment.API_SERVER + :3000';
 
   constructor(public router: Router, private http: HttpClient) {}
@@ -95,11 +95,31 @@ export class HttpsService {
     //   .pipe(catchError(this.errorHandler));
   };
 
-  public loginNodejs = async (path: string, data: any) => {
+  public syncNodejs = async (path: string, data: any) => {
     this.loading = true;
     return new Promise((resolve) => {
       this.http
         .post(this.testPath + path, data)
+        .toPromise()
+        .then((value) => {
+          resolve({ connect: true, response: value });
+          this.loading = false;
+        })
+        .catch((reason) => {
+          resolve({ connect: false, response: reason });
+          this.loading = false;
+        });
+    });
+    // return this.http
+    //   .post<any>(this.nodePath + path, data)
+    //   .pipe(catchError(this.errorHandler));
+  };
+
+  public loginNodejs = async (path: string, data: any) => {
+    this.loading = true;
+    return new Promise((resolve) => {
+      this.http
+        .post(this.nodePath + path, data)
         .toPromise()
         .then((value) => {
           resolve({ connect: true, response: value });

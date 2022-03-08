@@ -127,12 +127,15 @@ export class DrugManualComponent implements OnInit {
       this.inputGroup = this.formBuilder.group({
         hn: [splitted[0], Validators.required],
         name: [splitted[1], Validators.required],
-        birth: [result, Validators.required],
+        birth: [result],
         age: [splitted[5], Validators.required],
       });
       this.selectedSex = splitted[6];
     }
     this.birthDate = splitted[4] + '-' + splitted[3] + '-' + splitted[2];
+    setTimeout(() => {
+      this.swiper.nativeElement.focus();
+    }, 0);
     this.clickHn = false;
   }
   public onChangeItem() {
@@ -155,12 +158,12 @@ export class DrugManualComponent implements OnInit {
     'Name',
     'Spec',
     'Unit',
-    'firmName',
+    'location',
   ];
   selected = '';
 
   public getData = async () => {
-    let getData: any = await this.http.get('dataDrug');
+    let getData: any = await this.http.get('drugAll');
     // let getData2: any = await this.http.get('jvmExpire');
     // console.log(getData2);
 
@@ -273,6 +276,9 @@ export class DrugManualComponent implements OnInit {
       birth: [this.inputGroup.value.birth],
       age: [this.inputGroup.value.age, Validators.required],
     });
+    setTimeout(() => {
+      this.swiper.nativeElement.focus();
+    }, 0);
   }
   dataAge: any = null;
   startChange(e: any) {
@@ -283,6 +289,12 @@ export class DrugManualComponent implements OnInit {
     var dateObject = new Date(+dateParts[2], +dateParts[1], +dateParts[0]);
     var timeDiff = Math.abs(Date.now() - new Date(dateObject).getTime());
     this.dataAge = Math.floor(timeDiff / (1000 * 3600 * 24) / 365.25);
+    this.inputGroup = this.formBuilder.group({
+      hn: [this.inputGroup.value.hn, Validators.required],
+      name: [this.inputGroup.value.name, Validators.required],
+      birth: [this.inputGroup.value.birth],
+      age: [this.dataAge, Validators.required],
+    });
   }
 
   async send() {
@@ -328,13 +340,18 @@ export class DrugManualComponent implements OnInit {
       let notSent: any = await this.http.post('drugNotSent', formData);
       if (notSent.response.rowCount === 0) {
         let listDrugOPD: any = await this.http.post('listDrugOPD', formData);
-
+        let seCheckOutOfStock: any = await this.http.post(
+          'seCheckOutOfStock',
+          formData
+        );
         if (listDrugOPD.response.rowCount > 0) {
           if (
             listDrugOPD.response.result[0].deviceCode.includes('Xmed1') &&
             listDrugOPD.response.result[0].isPrepack == 'N' &&
             this.value[i].Qty >=
-              Number(listDrugOPD.response.result[0].HisPackageRatio)
+              Number(listDrugOPD.response.result[0].HisPackageRatio) &&
+            this.value[i].Qty <=
+              Number(seCheckOutOfStock.response.result[0].Quantity)
           ) {
             var qtyBox: number =
               this.value[i].Qty /
@@ -417,10 +434,6 @@ export class DrugManualComponent implements OnInit {
 
           // let numPack = listDrugPre.response.result[0].HisPackageRatio;
 
-          let seCheckOutOfStock: any = await this.http.post(
-            'seCheckOutOfStock',
-            formData
-          );
           var pre: any = {};
 
           if (
@@ -688,7 +701,6 @@ export class DrugManualComponent implements OnInit {
       };
       value2 = [];
       let xmlDrug = JsonToXML.parse('outpOrderDispense', jsonDrug);
-
       if (this.checkedDih == true) {
         let dataXml = { data: xmlDrug };
         getDataDIH = await this.http.postNodejs('sendDIHOPD', dataXml);
@@ -726,7 +738,13 @@ export class DrugManualComponent implements OnInit {
       (dih == 2 && jvm == 1) ||
       (dih == 1 && jvm == 1)
     ) {
-      Swal.fire('ส่งข้อมูลเสร็จสิ้น', '', 'success');
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'ส่งข้อมูลเสร็จสิ้น',
+        showConfirmButton: false,
+        timer: 2000,
+      });
     } else {
       Swal.fire('ส่งข้อมูลไม่สำเร็จ', '', 'error');
     }

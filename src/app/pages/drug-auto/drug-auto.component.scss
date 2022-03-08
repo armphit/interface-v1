@@ -1,21 +1,17 @@
 .highlightTableColor {
-  background-color: #D9EDF7
+  background-color: #d9edf7;
 }
-
-
-
 
 tr {
   cursor: pointer !important;
 }
 
 .svg-inline--fa {
-
   vertical-align: -0.18em !important;
 }
 
 .make-gold {
-  background-color: #C7E6C9
+  background-color: #c7e6c9;
 }
 
 .truncate {
@@ -40,7 +36,6 @@ tr {
 //   width: 800px;
 // }
 
-
 // .mat-column-hn {
 //   width: 300px;
 // }
@@ -48,8 +43,6 @@ tr {
 .mat-column-sendMachine {
   width: 10px;
 }
-
-
 
 mat-label {
   color: rgb(0, 0, 0);
@@ -63,7 +56,6 @@ mat-label {
 
 panel-body {
   color: #000;
-
 }
 
 .form-control[disabled],
@@ -73,7 +65,7 @@ fieldset[disabled] .form-control {
   opacity: 1;
 }
 
-.panel-info>.panel-heading {
+.panel-info > .panel-heading {
   padding-top: 19.5px;
   padding-bottom: 19.5px;
 }
@@ -82,7 +74,6 @@ fieldset[disabled] .form-control {
 
 //   min-height: 700px
 // }
-
 
 .example-section {
   margin: 5px 0;
@@ -106,55 +97,70 @@ fieldset[disabled] .form-control {
 #myImg:hover {
   opacity: 0.7;
 }
-
-/* The Modal (background) */
-.modal {
-  // display: none;
-  // /* Hidden by default */
-  // position: fixed;
-  /* Stay in place */
-
-  /* Sit on top */
-  padding-top: 100px;
-  /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%;
-  /* Full width */
-  height: 100%;
-  /* Full height */
-  overflow: auto;
-  /* Enable scroll if needed */
-  text-align: center;
-  /* Black w/ opacity */
-
+.modal-body {
+  position: relative;
+  overflow-y: auto;
+  max-height: 500px;
+  max-width: 999px;
+  min-width: 900px;
 }
 
-/* Modal Content (Image) */
-// .modal-content {
-//   margin: auto;
-//   display: block;
-//   width: 80%;
-//   max-width: 700px;
+.modal-dialog {
+  position: relative;
+  display: table;
+  /* This is important */
+  overflow-y: auto;
+  overflow-x: auto;
+  width: auto;
+  min-width: 300px;
+}
+/* The Modal (background) */
+// .modal {
+//   // display: none;
+//   // /* Hidden by default */
+//   // position: fixed;
+//   /* Stay in place */
+
+//   /* Sit on top */
+//   padding-top: 100px;
+//   /* Location of the box */
+//   left: 0;
+//   top: 0;
+//   width: 100%;
+//   /* Full width */
+//   height: 100%;
+//   /* Full height */
+//   overflow: auto;
+//   /* Enable scroll if needed */
+//   text-align: center;
+//   /* Black w/ opacity */
+
 // }
 
-/* Caption of Modal Image (Image Text) - Same Width as the Image */
+// /* Modal Content (Image) */
+// // .modal-content {
+// //   margin: auto;
+// //   display: block;
+// //   width: 80%;
+// //   max-width: 700px;
+// // }
 
+// /* Caption of Modal Image (Image Text) - Same Width as the Image */
 
-/* The Close Button */
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
+// /* The Close Button */
+// .close {
+//   position: absolute;
+//   top: 15px;
+//   right: 35px;
+//   color: #f1f1f1;
+//   font-size: 40px;
+//   font-weight: bold;
+//   transition: 0.3s;
+// }
 
-.close:hover,
-.close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
+// .close:hover,
+// .close:focus {
+//   color: #bbb;
+//   text-decoration: none;
+//   cursor: pointer;
+// }
